@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IUser } from '../../../../../_core/model/user.interface';
 
 @Component({
   selector: 'app-list-consumer',
@@ -8,4 +9,13 @@ import { Component } from '@angular/core';
 })
 export class ListConsumerComponent {
 
+  @Input() consumers: any[] = [];
+
+  constructor() {
+
+  }
+
+    ngOnInit(): void {
+
+    }
 }

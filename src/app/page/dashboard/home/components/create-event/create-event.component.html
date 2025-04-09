@@ -1,5 +1,5 @@
 <button
-  class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm font-medium shadow transition"
+  class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm font-medium shadow transition cursor-pointer"
   (click)="openModal()"
 >
   ➕ Créer un événement
@@ -9,11 +9,10 @@
   id="eventModal"
   class="fixed inset-0 flex items-center justify-center hidden z-50 bg-opacity-40 backdrop-blur-[2px]"
 >
-  <div class="bg-white w-full max-w-md p-6 rounded shadow-xl relative">
-    <!-- Close button -->
+  <div class="bg-white w-full max-w-lg p-6 rounded shadow-xl relative">
     <button
       (click)="closeModal()"
-      class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
+      class="absolute top-3 right-3 text-gray-500 cursor-pointer hover:text-red-500 text-xl font-bold"
     >
       &times;
     </button>
@@ -23,68 +22,100 @@
     </h2>
 
     <form id="eventForm" class="space-y-4">
-      <!-- Nom -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'événement </label>
         <input
           type="text"
-          placeholder="Nom de l'événement"
           required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
-      <!-- Date -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-        <input
-          type="date"
-          required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-
-      <!-- Quantité -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Quantité</label
+          >Description</label
+        >
+        <textarea
+          type="text"
+          placeholder="Description de l'événement"
+          required
+          class="w-full border border-gray-300 cursor-pointer rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+        </textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Date de début</label
+          >
+          <input
+            type="date"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Date de fin</label
+          >
+          <input
+            type="date"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Lieu de l'événement </label>
+        <input
+          type="text"
+          required
+          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Maximun nombre de place</label
         >
         <input
           type="number"
           placeholder="Ex: 10"
           required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
-      <!-- Statut -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Statut</label
+          >Catégorie</label
         >
         <select
           required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
-          <option value="">-- Choisir un statut --</option>
+          <option value="">-- Choisir une catégorie --</option>
           <option value="actif">Actif</option>
           <option value="attente">En attente</option>
           <option value="inactif">Inactif</option>
         </select>
       </div>
 
-      <!-- Boutons -->
+
+
       <div class="flex justify-end space-x-3 pt-4">
         <button
           type="button"
           (click)="closeModal()"
-          class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-medium"
+          class="bg-gray-200 cursor-pointer hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-medium"
         >
           Annuler
         </button>
         <button
           type="submit"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          class="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
         >
           Enregistrer
         </button>

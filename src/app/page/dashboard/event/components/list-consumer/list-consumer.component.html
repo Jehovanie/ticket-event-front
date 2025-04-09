@@ -1,4 +1,4 @@
-<table class="min-w-full divide-y divide-gray-200 text-sm">
+<table class="min-w-full divide-y divide-gray-200 text-sm overflow-y-hidden">
 	<thead class="bg-gray-50">
 		<tr>
 			<th class="px-6 py-4 text-left font-semibold text-gray-700">Numéro</th>
@@ -11,54 +11,30 @@
 			<th class="px-6 py-4 text-center font-semibold text-gray-700">Action</th>
 		</tr>
 	</thead>
-	<tbody class="divide-y divide-gray-200">
-		<tr class="hover:bg-gray-50 transition">
-			<td class="px-6 py-4">#001</td>
-			<td class="px-6 py-4">Produit A</td>
-			<td class="px-6 py-4">2025-04-07</td>
-			<td class="px-6 py-4">15</td>
-			<td class="px-6 py-4">
-				<span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-					Actif
-				</span>
-			</td>
-			<td class="px-6 py-4 text-center">
-				<a routerlink="/dashboard/event" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs">
-					Voir
-				</a>
-			</td>
-		</tr>
-		<tr class="hover:bg-gray-50 transition">
-			<td class="px-6 py-4">#002</td>
-			<td class="px-6 py-4">Produit B</td>
-			<td class="px-6 py-4">2025-04-06</td>
-			<td class="px-6 py-4">8</td>
-			<td class="px-6 py-4">
-				<span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
-					En attente
-				</span>
-			</td>
-			<td class="px-6 py-4 text-center">
-				<a routerlink="/dashboard/event" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs">
-					Voir
-				</a>
-			</td>
-		</tr>
-		<tr class="hover:bg-gray-50 transition">
-			<td class="px-6 py-4">#003</td>
-			<td class="px-6 py-4">Produit C</td>
-			<td class="px-6 py-4">2025-04-05</td>
-			<td class="px-6 py-4">23</td>
-			<td class="px-6 py-4">
-				<span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-					Inactif
-				</span>
-			</td>
-			<td class="px-6 py-4 text-center">
-				<a routerlink="/dashboard/event" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs">
-					Voir
-				</a>
-			</td>
-		</tr>
+	<tbody class="divide-y divide-gray-200 h-[150px] overflow-y-scroll">
+		@if (consumers.length > 0) {
+			@for (consumer of consumers; track consumer.name) {
+				<tr class="hover:bg-gray-50 transition">
+					<td class="px-6 py-4">{{ consumer.id }}</td>
+					<td class="px-6 py-4">{{ consumer.name }}</td>
+					<td class="px-6 py-4">2025-04-07</td>
+					<td class="px-6 py-4">15</td>
+					<td class="px-6 py-4">
+						<span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+							Actif
+						</span>
+					</td>
+					<td class="px-6 py-4 text-center">
+						<a routerlink="/dashboard/event" class="text-white cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs">
+							Voir
+						</a>
+					</td>
+				</tr>
+			}
+		} @else {
+			<tr class="hover:bg-gray-50 transition">
+				<td class="px-6 py-4" colspan="6">Aucun résultat trouvé</td>
+			</tr>
+		}
 	</tbody>
 </table>

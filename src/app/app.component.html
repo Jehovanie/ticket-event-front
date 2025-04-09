@@ -1,13 +1,13 @@
-<div class="w-full h-full overflow-hidden">
-  <div class="flex">
-    <div class="w-46">
+<div class="w-screen h-screen overflow-hidden">
+  <div class="flex w-full h-full">
+    <div class="w-46 h-full">
       <app-asidebar></app-asidebar>
     </div>
-    <div class="w-[90%]">
-      <div class="navbar">
+    <div class="flex-1 h-full flex flex-col">
+      <div class="navbar h-[15%] max-h-24">
         <app-navbar></app-navbar>
       </div>
-      <div class="h-[80%] p-6 bg-gray-100">
+      <div class="flex-1 p-6 bg-gray-100 overflow-y-auto">
         <router-outlet />
       </div>
     </div>

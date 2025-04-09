@@ -6,6 +6,4 @@ import { CardUiStateComponent } from '../card-ui-state/card-ui-state.component';
   templateUrl: './state-event.component.html',
   styleUrl: './state-event.component.css',
 })
-export class StateEventComponent {
-
-}
+export class StateEventComponent {}
