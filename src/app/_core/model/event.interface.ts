@@ -1,13 +1,16 @@
+import { ICategory } from './category.interface';
+import { IOrganizer } from './organizer.interface';
+
 export interface IEvent {
-  _id?: string;
+  id?: string;
   title?: string;
   description?: string;
   startedAt: Date;
-  endedAt: Date;
-  location?: string;
+  endAt: Date;
+  localisation?: string;
   imageUrl?: string[];
-  organisateur?: string;
-  category?: string;
+  organizer?: IOrganizer | string;
+  category?: ICategory | string;
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;

@@ -13,6 +13,7 @@
     <button
       (click)="closeModal()"
       class="absolute top-3 right-3 text-gray-500 cursor-pointer hover:text-red-500 text-xl font-bold"
+      *ngIf="!isSubmitting"
     >
       &times;
     </button>
@@ -21,13 +22,7 @@
       Créer un nouvel événement
     </h2>
 
-    <form
-      #form="ngForm"
-      (ngSubmit)="onSubmit()"
-      novalidate
-      id="eventForm"
-      class="space-y-4"
-    >
+    <form (submit)="onSubmit()" novalidate id="eventForm" class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Nom de l'événement
@@ -35,6 +30,8 @@
         <input
           type="text"
           required
+          [value]="event.title()"
+          (input)="event.title.set($any($event.target).value)"
           class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
@@ -47,6 +44,8 @@
           type="text"
           placeholder="Description de l'événement"
           required
+          [value]="event.description()"
+          (input)="event.description.set($any($event.target).value)"
           class="w-full border border-gray-300 cursor-pointer rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
         </textarea>
@@ -60,6 +59,8 @@
           <input
             type="date"
             required
+            [value]="event.startedAt()"
+            (input)="event.startedAt.set($any($event.target).value)"
             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -70,6 +71,8 @@
           <input
             type="date"
             required
+            [value]="event.endAt()"
+            (input)="event.endAt.set($any($event.target).value)"
             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -82,6 +85,8 @@
         <input
           type="text"
           required
+          [value]="event.localisation()"
+          (input)="event.localisation.set($any($event.target).value)"
           class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
@@ -104,12 +109,31 @@
         >
         <select
           required
+          [value]="event.category()"
+          (input)="event.category.set($any($event.target).value)"
           class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           <option value="">-- Choisir une catégorie --</option>
-          <option value="actif">Actif</option>
-          <option value="attente">En attente</option>
-          <option value="inactif">Inactif</option>
+          <ng-container *ngFor="let category of categories">
+            <option [value]="category.id">{{ category.name }}</option>
+          </ng-container>
+        </select>
+      </div>
+
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Organisateur</label
+        >
+        <select
+          required
+          [value]="event.organizer()"
+          (input)="event.organizer.set($any($event.target).value)"
+          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">-- Choisir une organisateur --</option>
+          <ng-container *ngFor="let organizer of organizers">
+            <option [value]="organizer.id">{{ organizer.name }}</option>
+          </ng-container>
         </select>
       </div>
 
@@ -118,14 +142,25 @@
           type="button"
           (click)="closeModal()"
           class="bg-gray-200 cursor-pointer hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-medium"
+          *ngIf="!isSubmitting"
         >
           Annuler
         </button>
         <button
           type="submit"
-          class="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+          *ngIf="isSubmitting"
+          disabled
         >
-          Enregistrer
+          <app-btn-loading></app-btn-loading>
+        </button>
+
+        <button
+          type="submit"
+          class="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          *ngIf="!isSubmitting"
+        >
+          Créer l'événement
         </button>
       </div>
     </form>
