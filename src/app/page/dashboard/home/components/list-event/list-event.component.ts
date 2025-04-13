@@ -1,31 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, Input } from '@angular/core';
 import { IEvent } from '../../../../../_core/model/event.interface';
-import { EventsService } from '../../../../../_core/services/events/events.service';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-event',
   imports: [
-    RouterLink,
+    CommonModule, 
+    RouterLink
   ],
   templateUrl: './list-event.component.html',
-  styleUrl: './list-event.component.css'
+  styleUrl: './list-event.component.css',
 })
-export class ListEventComponent implements OnInit {
+export class ListEventComponent {
+  @Input() events!: IEvent[];
 
-  private dataEvents!: {
-    events: IEvent[],
-    isLoading: boolean,
-    error: string | null
-  }
-
-  private eventsService!: EventsService
-
-  constructor(){
-
-  }
-
-  ngOnInit() {
-    // Initialization logic here
+  constructor() {
+   
   }
 }

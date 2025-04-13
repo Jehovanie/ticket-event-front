@@ -13,9 +13,11 @@ export class EventsService extends AppService<IEvent> {
     super(httpClient, environment.apiUrl);
   }
 
-
-  createEvent(event: IEvent):Observable<IEvent> {
+  createEvent(event: IEvent): Observable<IEvent> {
     return this.create('/events', event);
   }
-  
+
+  getAllEvents(page = 0): Observable<IEvent[]> {
+    return this.getAll('/events');
+  }
 }

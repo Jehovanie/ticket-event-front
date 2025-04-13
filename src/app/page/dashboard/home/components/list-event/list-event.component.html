@@ -2,8 +2,13 @@
   <thead class="bg-gray-50">
     <tr>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">Numéro</th>
-      <th class="px-6 py-4 text-left font-semibold text-gray-700">Nom</th>
-      <th class="px-6 py-4 text-left font-semibold text-gray-700">Date</th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">Titre</th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">
+        Date de debut
+      </th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">
+        Date de fin
+      </th>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">
         Nombre Quantité
       </th>
@@ -12,60 +17,22 @@
     </tr>
   </thead>
   <tbody class="divide-y divide-gray-200">
-    <tr class="hover:bg-gray-50 transition">
-      <td class="px-6 py-4">#001</td>
-      <td class="px-6 py-4">Produit A</td>
-      <td class="px-6 py-4">2025-04-07</td>
+    <tr class="hover:bg-gray-50 transition" *ngFor="let event of events">
+      <td class="px-6 py-4">{{ event.id }}</td>
+      <td class="px-6 py-4">{{ event.title }}</td>
+      <td class="px-6 py-4">{{ event.startedAt }}</td>
+      <td class="px-6 py-4">{{ event.endAt }}</td>
       <td class="px-6 py-4">15</td>
       <td class="px-6 py-4">
         <span
           class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
         >
-          Actif
+          {{ event.status }}
         </span>
       </td>
       <td class="px-6 py-4 text-center">
-        <a routerLink="/dashboard/event"
-          class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs"
-        >
-          Voir
-        </a>
-      </td>
-    </tr>
-    <tr class="hover:bg-gray-50 transition">
-      <td class="px-6 py-4">#002</td>
-      <td class="px-6 py-4">Produit B</td>
-      <td class="px-6 py-4">2025-04-06</td>
-      <td class="px-6 py-4">8</td>
-      <td class="px-6 py-4">
-        <span
-          class="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full"
-        >
-          En attente
-        </span>
-      </td>
-      <td class="px-6 py-4 text-center">
-        <a routerLink="/dashboard/event"
-          class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs"
-        >
-          Voir
-        </a>
-      </td>
-    </tr>
-    <tr class="hover:bg-gray-50 transition">
-      <td class="px-6 py-4">#003</td>
-      <td class="px-6 py-4">Produit C</td>
-      <td class="px-6 py-4">2025-04-05</td>
-      <td class="px-6 py-4">23</td>
-      <td class="px-6 py-4">
-        <span
-          class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full"
-        >
-          Inactif
-        </span>
-      </td>
-      <td class="px-6 py-4 text-center">
-        <a routerLink="/dashboard/event"
+        <a
+          routerLink="/dashboard/event"
           class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs"
         >
           Voir
