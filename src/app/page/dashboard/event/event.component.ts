@@ -6,9 +6,19 @@ import { RouterLink } from '@angular/router';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { UsersService } from '../../../_core/services/users/users.service';
-import { IEvent } from '../../../_core/model/event.interface';
 import { IUser } from '../../../_core/model/user.interface';
 import { CommonModule } from '@angular/common';
+
+export type EventStateType = {
+  statusTicket: {
+    global: { [key: string]: number }[];
+    actuel: { [key: string]: number }[];
+    filter: {
+      time: string;
+      value: { [key: string]: number }[];
+    };
+  };
+};
 
 @Component({
   selector: 'app-event',
@@ -25,30 +35,33 @@ import { CommonModule } from '@angular/common';
   styleUrl: './event.component.css',
 })
 export class EventComponent implements OnInit {
-  isLoadingListConsumer = true;
-  isLoadingStateEvent = true;
-
   consumer$!: Observable<{
     isLoadingListConsumer: boolean;
     errorListConsumer: string | null;
     consumers: IUser[];
   }>;
 
-  stateEvent$!: Observable<{
-    isLoadingStateEvent: boolean;
-    errorStateEvent: string;
-    stateEvent: IEvent;
-  }>;
+  eventStates: {
+    isLoading: boolean;
+    value: EventStateType;
+    error: any[];
+  } = {
+    isLoading: false,
+    value: {
+      statusTicket: {
+        global: [],
+        actuel: [],
+        filter: { time: '', value: [] },
+      },
+    },
+    error: [],
+  };
 
-  constructor(private usersService: UsersService) {
-    setTimeout(() => {
-      this.isLoadingListConsumer = false;
-      this.isLoadingStateEvent = false;
-    }, 3000);
-  }
+  constructor(private usersService: UsersService) {}
 
   ngOnInit(): void {
     this.subscribeConsumer();
+    this.initEventState();
   }
 
   subscribeConsumer() {
@@ -71,5 +84,22 @@ export class EventComponent implements OnInit {
         })
       )
     );
+  }
+
+  initEventState() {
+    this.eventStates = {
+      isLoading: false,
+      value: {
+        statusTicket: {
+          global: [{ vip: 150 }, { gold: 200 }, { fanzone: 300 }],
+          actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
+          filter: {
+            time: '2023-10-01',
+            value: [{ vip: 3 }, { gold: 7 }, { fanzone: 51 }],
+          },
+        },
+      },
+      error: [],
+    };
   }
 }
