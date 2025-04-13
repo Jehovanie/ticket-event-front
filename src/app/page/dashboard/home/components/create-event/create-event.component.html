@@ -7,9 +7,11 @@
 
 <div
   id="eventModal"
-  class="fixed inset-0 flex items-center justify-center hidden z-50 bg-opacity-40 backdrop-blur-[2px]"
+  class="fixed inset-0 flex hidden items-center justify-center z-50 bg-opacity-40 backdrop-blur-[2px]"
 >
-  <div class="bg-white w-[50vw] max-h-[90vh] overflow-auto p-6 rounded shadow-xl relative">
+  <div
+    class="bg-white w-[50vw] max-h-[90vh] overflow-auto p-6 rounded shadow-xl relative"
+  >
     <button
       (click)="closeModal()"
       class="absolute top-3 right-3 text-gray-500 cursor-pointer hover:text-red-500 text-xl font-bold"
@@ -78,63 +80,85 @@
         </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Lieu de l'événement
-        </label>
-        <input
-          type="text"
-          required
-          [value]="event.localisation()"
-          (input)="event.localisation.set($any($event.target).value)"
-          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+      <div class="grid grid-cols-2 gap-4 items-end w-full">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Lieu de l'événement</label
+          >
+          <select
+            required
+            [value]="event.location()"
+            (input)="event.location.set($any($event.target).value)"
+            class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-- Choisir un lieu --</option>
+            <ng-container *ngFor="let locations of locations">
+              <option [value]="locations.id">{{ locations.name }}</option>
+            </ng-container>
+          </select>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="cursor-pointer border w-full border-black text-black px-4 py-2 rounded-lg text-sm font-medium"
+          >
+            Créer une nouvelle location
+          </button>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Maximun nombre de place</label
-        >
-        <input
-          type="number"
-          placeholder="Ex: 10"
-          required
-          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+      <div class="grid grid-cols-2 gap-4 items-end w-full">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Catégorie</label
+          >
+          <select
+            required
+            [value]="event.category()"
+            (input)="event.category.set($any($event.target).value)"
+            class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-- Choisir une catégorie --</option>
+            <ng-container *ngFor="let category of categories">
+              <option [value]="category.id">{{ category.name }}</option>
+            </ng-container>
+          </select>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="cursor-pointer border text-center w-full border-black text-black px-4 py-2 rounded-lg text-sm font-medium"
+          >
+            Créer une nouvelle categorie
+          </button>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Catégorie</label
-        >
-        <select
-          required
-          [value]="event.category()"
-          (input)="event.category.set($any($event.target).value)"
-          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value="">-- Choisir une catégorie --</option>
-          <ng-container *ngFor="let category of categories">
-            <option [value]="category.id">{{ category.name }}</option>
-          </ng-container>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Organisateur</label
-        >
-        <select
-          required
-          [value]="event.organizer()"
-          (input)="event.organizer.set($any($event.target).value)"
-          class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value="">-- Choisir une organisateur --</option>
-          <ng-container *ngFor="let organizer of organizers">
-            <option [value]="organizer.id">{{ organizer.name }}</option>
-          </ng-container>
-        </select>
+      <div class="grid grid-cols-2 gap-4 items-end w-full">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Organisateur</label
+          >
+          <select
+            required
+            [value]="event.organizer()"
+            (input)="event.organizer.set($any($event.target).value)"
+            class="w-full border cursor-pointer border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-- Choisir une organisateur --</option>
+            <ng-container *ngFor="let organizer of organizers">
+              <option [value]="organizer.id">{{ organizer.name }}</option>
+            </ng-container>
+          </select>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="cursor-pointer border w-full border-black text-black px-4 py-2 rounded-lg text-sm font-medium"
+          >
+            Créer une nouvelle organisateur
+          </button>
+        </div>
       </div>
 
       <div class="flex justify-end space-x-3 pt-4">

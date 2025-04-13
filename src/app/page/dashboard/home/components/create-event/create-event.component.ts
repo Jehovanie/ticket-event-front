@@ -15,6 +15,8 @@ import { ICategory } from '../../../../../_core/model/category.interface';
 import { CategoryService } from '../../../../../_core/services/category/category.service';
 import { IOrganizer } from '../../../../../_core/model/organizer.interface';
 import { OrganizerService } from '../../../../../_core/services/organizer/organizer.service';
+import { LocationService } from '../../../../../_core/services/location/location.service';
+import { ILocation } from '../../../../../_core/model/location.interface';
 
 @Component({
   selector: 'app-create-event',
@@ -28,7 +30,7 @@ export class CreateEventComponent implements OnInit {
     description: WritableSignal<string>;
     startedAt: WritableSignal<Date>;
     endAt: WritableSignal<Date>;
-    localisation: WritableSignal<string>;
+    location: WritableSignal<string>;
     imageUrl: WritableSignal<string[]>;
     category: WritableSignal<string>;
     createdAt: WritableSignal<Date>;
@@ -46,11 +48,13 @@ export class CreateEventComponent implements OnInit {
 
   categories!: ICategory[];
   organizers!: IOrganizer[];
+  locations!: ILocation[];
 
   constructor(
     private eventsService: EventsService,
     private categoryService: CategoryService,
-    private organizerService: OrganizerService
+    private organizerService: OrganizerService,
+    private locationService: LocationService
   ) {}
 
   ngOnInit() {
@@ -59,7 +63,7 @@ export class CreateEventComponent implements OnInit {
       description: signal<string>(''),
       startedAt: signal<Date>(new Date()),
       endAt: signal<Date>(new Date()),
-      localisation: signal<string>(''),
+      location: signal<string>(''),
       imageUrl: signal<string[]>([]),
       category: signal<string>(''),
       createdAt: signal<Date>(new Date()),
@@ -79,6 +83,7 @@ export class CreateEventComponent implements OnInit {
   initAllData() {
     this.initCategories();
     this.initOrganizers();
+    this.initLocations();
   }
 
   async initCategories() {
@@ -100,6 +105,17 @@ export class CreateEventComponent implements OnInit {
       });
     } catch (e) {
       this.categories = [];
+    }
+  }
+
+  async initLocations() {
+    try {
+      this.locationService.getAllLocations().subscribe((locations) => {
+        console.log('Location:', locations);
+        this.locations = locations;
+      });
+    } catch (e) {
+      this.locations = [];
     }
   }
 
@@ -136,16 +152,21 @@ export class CreateEventComponent implements OnInit {
         ? `/api/category/${event.category()}`
         : event.category();
 
+    let location =
+      typeof event.location() === 'string'
+        ? `/api/location/${event.location()}`
+        : event.location();
+
     return {
       title: event.title(),
       description: event.description(),
       startedAt: event.startedAt(),
       endAt: event.endAt(),
-      localisation: event.localisation(),
       imageUrl: event.imageUrl(),
-      category: category,
       createdAt: event.createdAt(),
       updatedAt: event.updatedAt(),
+      location: location,
+      category: category,
       organizer: organizer,
       status: 'pending',
     };
@@ -184,7 +205,7 @@ export class CreateEventComponent implements OnInit {
     this.event.description.set('');
     this.event.startedAt.set(new Date());
     this.event.endAt.set(new Date());
-    this.event.localisation.set('');
+    this.event.location.set('');
     this.event.imageUrl.set([]);
     this.event.category.set('');
     this.event.createdAt.set(new Date());

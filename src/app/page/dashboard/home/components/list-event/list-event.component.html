@@ -2,15 +2,19 @@
   <thead class="bg-gray-50">
     <tr>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">Numéro</th>
-      <th class="px-6 py-4 text-left font-semibold text-gray-700">Titre</th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">Evénement</th>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">
         Date de debut
       </th>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">
         Date de fin
       </th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">Lieu</th>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">
-        Nombre Quantité
+        Place maximum
+      </th>
+      <th class="px-6 py-4 text-left font-semibold text-gray-700">
+        Place libre
       </th>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">Statut</th>
       <th class="px-6 py-4 text-center font-semibold text-gray-700">Action</th>
@@ -18,11 +22,13 @@
   </thead>
   <tbody class="divide-y divide-gray-200">
     <tr class="hover:bg-gray-50 transition" *ngFor="let event of events">
-      <td class="px-6 py-4">{{ event.id }}</td>
+      <td class="px-6 py-4 text-center">{{ event.id }}</td>
       <td class="px-6 py-4">{{ event.title }}</td>
-      <td class="px-6 py-4">{{ event.startedAt }}</td>
-      <td class="px-6 py-4">{{ event.endAt }}</td>
-      <td class="px-6 py-4">15</td>
+      <td class="px-6 py-4">{{ event.startedAt | titleCaseDateFr }}</td>
+      <td class="px-6 py-4">{{ event.endAt | titleCaseDateFr }}</td>
+      <td class="px-6 py-4">{{ event.location.name }}</td>
+      <td class="px-6 py-4 text-center">{{ event.location.size }}</td>
+      <td class="px-6 py-4 text-center">48</td>
       <td class="px-6 py-4">
         <span
           class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
