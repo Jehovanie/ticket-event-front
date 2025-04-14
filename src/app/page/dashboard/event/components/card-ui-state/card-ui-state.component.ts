@@ -1,11 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import {
-  ChartData,
-  ChartDatasetCustomTypesPerDataset,
-  ChartEvent,
-  ChartType,
-} from 'chart.js';
+import { ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartDoughnutType } from '../state-event/state-event.component';
 
@@ -32,6 +27,7 @@ export class CardUiStateComponent implements OnInit {
   };
 
   chartOptions = {
+    responsive: true,
     cutout: '60%',
     plugins: {
       legend: {
