@@ -30,20 +30,36 @@ export class CreateEventComponent implements OnInit {
     description: WritableSignal<string>;
     startedAt: WritableSignal<Date>;
     endAt: WritableSignal<Date>;
-    location: WritableSignal<string>;
     imageUrl: WritableSignal<string[]>;
-    category: WritableSignal<string>;
-    createdAt: WritableSignal<Date>;
-    updatedAt: WritableSignal<Date>;
-    organizer: WritableSignal<string>;
+
+    tickets: WritableSignal<
+      { id: Signal<number>, name: Signal<string>; price: Signal<number>; size: Signal<number> }[]
+    >;
+
+    locationId: WritableSignal<number | null>;
+    locationName: WritableSignal<string>;
+    locationSize: WritableSignal<number | null>;
+
+    categoryId: WritableSignal<number | null>;
+    categoryName: WritableSignal<string>;
+    categoryColor: WritableSignal<string>;
+
+    organizerId: WritableSignal<number | null>;
+    organizerName: WritableSignal<string>;
+    organizerEmail: WritableSignal<string>;
+    organizerPhone: WritableSignal<string>;
+    organizerAddress: WritableSignal<string>;
+    organizerWebsite: WritableSignal<string>;
   };
 
   isValidEvent!: {
     title: Signal<boolean>;
     description: Signal<boolean>;
-    category: Signal<boolean>;
   };
 
+  isCreateNewLocation: boolean = false;
+  isCreateNewOrganizer: boolean = false;
+  isCreateNewCategory: boolean = false;
   isSubmitting: boolean = false;
 
   categories!: ICategory[];
@@ -63,18 +79,31 @@ export class CreateEventComponent implements OnInit {
       description: signal<string>(''),
       startedAt: signal<Date>(new Date()),
       endAt: signal<Date>(new Date()),
-      location: signal<string>(''),
       imageUrl: signal<string[]>([]),
-      category: signal<string>(''),
-      createdAt: signal<Date>(new Date()),
-      updatedAt: signal<Date>(new Date()),
-      organizer: signal<string>(''),
+
+      tickets: signal<
+        {id: Signal<number>, name: Signal<string>; price: Signal<number>; size: Signal<number> }[]
+      >([]),
+
+      locationId: signal<number | null>(null),
+      locationName: signal<string>(''),
+      locationSize: signal<number | null>(null),
+
+      categoryId: signal<number | null>(null),
+      categoryName: signal<string>(''),
+      categoryColor: signal<string>(''),
+
+      organizerId: signal<number | null>(null),
+      organizerName: signal<string>(''),
+      organizerEmail: signal<string>(''),
+      organizerPhone: signal<string>(''),
+      organizerAddress: signal<string>(''),
+      organizerWebsite: signal<string>(''),
     };
 
     this.isValidEvent = {
       title: computed<boolean>(() => this.event.title().trim().length >= 3),
       description: computed(() => this.event.description().trim().length >= 3),
-      category: computed(() => this.event.category().trim().length >= 3),
     };
 
     this.initAllData();
@@ -84,6 +113,33 @@ export class CreateEventComponent implements OnInit {
     this.initCategories();
     this.initOrganizers();
     this.initLocations();
+  }
+
+  updateTicketPrice(index: any, value: number) {
+    const updated = this.event
+      .tickets()
+      .map((t, i) => (i === index ? { ...t, price: signal(value) } : t));
+
+    this.event.tickets.set(updated);
+  }
+
+  updateTicketSize(index: any, value: number) {
+    const updated = this.event
+      .tickets()
+      .map((t, i) => (i === index ? { ...t, size: signal(value) } : t));
+
+    this.event.tickets.set(updated);
+  }
+
+  addTicket() {
+    const newTicket = {
+      id: signal<number>(Math.random()),
+      name: signal<string>(''),
+      price: signal<number>(0),
+      size: signal<number>(0),
+    };
+
+    this.event.tickets.set([...this.event.tickets(), newTicket]);
   }
 
   async initCategories() {
@@ -120,11 +176,7 @@ export class CreateEventComponent implements OnInit {
   }
 
   isFormValid = computed(() => {
-    return (
-      this.isValidEvent.title() &&
-      this.isValidEvent.description() &&
-      this.isValidEvent.category()
-    );
+    return this.isValidEvent.title() && this.isValidEvent.description();
   });
 
   openModal() {
@@ -141,21 +193,48 @@ export class CreateEventComponent implements OnInit {
     }
   }
 
+  updateTicketName(index: any, value: string) {
+    const updated = this.event
+      .tickets()
+      .map((t, i) => (i === index ? { ...t, name: signal(value) } : t));
+
+    this.event.tickets.set(updated);
+  }
+
+  onSelectLocation(event: any) {
+    console.log(event.target.value);
+    const selectedLocation = this.locations.find(
+      (location) => +location.id === +event.target.value
+    );
+
+    if (selectedLocation) {
+      this.event.locationId.set(parseInt(selectedLocation.id));
+      this.event.locationName.set(selectedLocation.name);
+      this.event.locationSize.set(selectedLocation.size);
+    }
+  }
+
   createDataMapping(event: any): IEvent {
-    let organizer =
-      typeof event.organizer() === 'string'
-        ? `/api/organizer/${event.organizer()}`
-        : event.organizer();
+    const location = {
+      id: event.locationId(),
+      name: event.locationName(),
+      size: event.locationSize(),
+    };
 
-    let category =
-      typeof event.category() === 'string'
-        ? `/api/category/${event.category()}`
-        : event.category();
+    const category = {
+      id: event.categoryId(),
+      name: event.categoryName(),
+      color: event.categoryColor(),
+    };
 
-    let location =
-      typeof event.location() === 'string'
-        ? `/api/location/${event.location()}`
-        : event.location();
+    const organizer = {
+      id: event.organizerId(),
+      name: event.organizerName(),
+      email: event.organizerEmail(),
+      phone: event.organizerPhone(),
+      address: event.organizerAddress(),
+      website: event.organizerWebsite(),
+    };
 
     return {
       title: event.title(),
@@ -163,8 +242,6 @@ export class CreateEventComponent implements OnInit {
       startedAt: event.startedAt(),
       endAt: event.endAt(),
       imageUrl: event.imageUrl(),
-      createdAt: event.createdAt(),
-      updatedAt: event.updatedAt(),
       location: location,
       category: category,
       organizer: organizer,
@@ -178,12 +255,13 @@ export class CreateEventComponent implements OnInit {
       return;
     }
     const newEvent: IEvent = this.createDataMapping(this.event);
+    console.log(newEvent);
 
     this.isSubmitting = true;
 
-    console.log(newEvent);
+    // console.log(newEvent);
 
-    await this.handleCreateEvent(newEvent);
+    // await this.handleCreateEvent(newEvent);
   }
 
   async handleCreateEvent(event: IEvent) {
@@ -205,10 +283,23 @@ export class CreateEventComponent implements OnInit {
     this.event.description.set('');
     this.event.startedAt.set(new Date());
     this.event.endAt.set(new Date());
-    this.event.location.set('');
     this.event.imageUrl.set([]);
-    this.event.category.set('');
-    this.event.createdAt.set(new Date());
-    this.event.updatedAt.set(new Date());
+
+    this.event.tickets.set([]);
+
+    this.event.locationId.set(null);
+    this.event.locationName.set('');
+    this.event.locationSize.set(null);
+
+    this.event.categoryId.set(null);
+    this.event.categoryName.set('');
+    this.event.categoryColor.set('');
+
+    this.event.organizerId.set(null);
+    this.event.organizerName.set('');
+    this.event.organizerEmail.set('');
+    this.event.organizerPhone.set('');
+    this.event.organizerAddress.set('');
+    this.event.organizerWebsite.set('');
   }
 }
