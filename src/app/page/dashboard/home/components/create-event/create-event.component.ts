@@ -32,24 +32,29 @@ export class CreateEventComponent implements OnInit {
     endAt: WritableSignal<Date>;
     imageUrl: WritableSignal<string[]>;
 
-    tickets: WritableSignal<
-      { id: Signal<number>, name: Signal<string>; price: Signal<number>; size: Signal<number> }[]
-    >;
-
     locationId: WritableSignal<number | null>;
-    locationName: WritableSignal<string>;
+    locationName: WritableSignal<string | null>;
     locationSize: WritableSignal<number | null>;
 
     categoryId: WritableSignal<number | null>;
-    categoryName: WritableSignal<string>;
-    categoryColor: WritableSignal<string>;
+    categoryName: WritableSignal<string | null>;
+    categoryColor: WritableSignal<string | null>;
 
     organizerId: WritableSignal<number | null>;
-    organizerName: WritableSignal<string>;
-    organizerEmail: WritableSignal<string>;
-    organizerPhone: WritableSignal<string>;
-    organizerAddress: WritableSignal<string>;
-    organizerWebsite: WritableSignal<string>;
+    organizerName: WritableSignal<string | null>;
+    organizerEmail: WritableSignal<string | null>;
+    organizerPhone: WritableSignal<string | null>;
+    organizerAddress: WritableSignal<string | null>;
+    organizerWebsite: WritableSignal<string | null>;
+
+    tickets: WritableSignal<
+      {
+        id: Signal<number>;
+        name: Signal<string>;
+        price: Signal<number>;
+        size: Signal<number>;
+      }[]
+    >;
   };
 
   isValidEvent!: {
@@ -82,23 +87,28 @@ export class CreateEventComponent implements OnInit {
       imageUrl: signal<string[]>([]),
 
       tickets: signal<
-        {id: Signal<number>, name: Signal<string>; price: Signal<number>; size: Signal<number> }[]
+        {
+          id: Signal<number>;
+          name: Signal<string>;
+          price: Signal<number>;
+          size: Signal<number>;
+        }[]
       >([]),
 
       locationId: signal<number | null>(null),
-      locationName: signal<string>(''),
+      locationName: signal<string | null>(null),
       locationSize: signal<number | null>(null),
 
       categoryId: signal<number | null>(null),
-      categoryName: signal<string>(''),
-      categoryColor: signal<string>(''),
+      categoryName: signal<string | null>(null),
+      categoryColor: signal<string | null>(null),
 
       organizerId: signal<number | null>(null),
-      organizerName: signal<string>(''),
-      organizerEmail: signal<string>(''),
-      organizerPhone: signal<string>(''),
-      organizerAddress: signal<string>(''),
-      organizerWebsite: signal<string>(''),
+      organizerName: signal<string | null>(null),
+      organizerEmail: signal<string | null>(null),
+      organizerPhone: signal<string | null>(null),
+      organizerAddress: signal<string | null>(null),
+      organizerWebsite: signal<string | null>(null),
     };
 
     this.isValidEvent = {
@@ -107,6 +117,8 @@ export class CreateEventComponent implements OnInit {
     };
 
     this.initAllData();
+
+    this.addTicket();
   }
 
   initAllData() {
@@ -115,31 +127,55 @@ export class CreateEventComponent implements OnInit {
     this.initLocations();
   }
 
-  updateTicketPrice(index: any, value: number) {
-    const updated = this.event
-      .tickets()
-      .map((t, i) => (i === index ? { ...t, price: signal(value) } : t));
+  updateTicketName(index: number, value: string) {
+    const updated = this.event.tickets().map((ticket) => {
+      if (ticket.id() === index) {
+        ticket.name = signal(value);
+      }
+      return ticket;
+    });
+
+    this.event.tickets.set(updated);
+  }
+
+  updateTicketPrice(index: number, value: number) {
+    const updated = this.event.tickets().map((ticket) => {
+      if (ticket.id() === index) {
+        ticket.price = signal(+value);
+      }
+      return ticket;
+    });
 
     this.event.tickets.set(updated);
   }
 
   updateTicketSize(index: any, value: number) {
-    const updated = this.event
-      .tickets()
-      .map((t, i) => (i === index ? { ...t, size: signal(value) } : t));
+    const updated = this.event.tickets().map((ticket) => {
+      if (ticket.id() === index) {
+        ticket.size = signal(+value);
+      }
+      return ticket;
+    });
 
     this.event.tickets.set(updated);
   }
 
   addTicket() {
+    const radomID = Math.floor(Math.random() * 100);
     const newTicket = {
-      id: signal<number>(Math.random()),
+      id: signal<number>(radomID),
       name: signal<string>(''),
       price: signal<number>(0),
       size: signal<number>(0),
     };
 
     this.event.tickets.set([...this.event.tickets(), newTicket]);
+  }
+
+  removeTicket(ticketID: Number) {
+    this.event.tickets.set([
+      ...this.event.tickets().filter((ticket) => ticket.id() !== ticketID),
+    ]);
   }
 
   async initCategories() {
@@ -193,14 +229,6 @@ export class CreateEventComponent implements OnInit {
     }
   }
 
-  updateTicketName(index: any, value: string) {
-    const updated = this.event
-      .tickets()
-      .map((t, i) => (i === index ? { ...t, name: signal(value) } : t));
-
-    this.event.tickets.set(updated);
-  }
-
   onSelectLocation(event: any) {
     console.log(event.target.value);
     const selectedLocation = this.locations.find(
@@ -236,32 +264,48 @@ export class CreateEventComponent implements OnInit {
       website: event.organizerWebsite(),
     };
 
+    const tickets = event
+      .tickets()
+      .map(
+        (ticket: {
+          id: Signal<number>;
+          name: Signal<string>;
+          price: Signal<number>;
+          size: Signal<number>;
+        }) => {
+          return {
+            id: ticket.id(),
+            name: ticket.name(),
+            price: ticket.price(),
+            size: ticket.size(),
+          };
+        }
+      );
+
     return {
       title: event.title(),
       description: event.description(),
       startedAt: event.startedAt(),
       endAt: event.endAt(),
       imageUrl: event.imageUrl(),
+      status: 'pending',
       location: location,
       category: category,
       organizer: organizer,
-      status: 'pending',
+      tickets: tickets,
     };
   }
 
   async onSubmit() {
     if (!this.isValidEvent) {
-      alert('Please fill all the fields correctly.');
+      console.log('Please fill all the fields correctly.');
       return;
     }
     const newEvent: IEvent = this.createDataMapping(this.event);
     console.log(newEvent);
 
     this.isSubmitting = true;
-
-    // console.log(newEvent);
-
-    // await this.handleCreateEvent(newEvent);
+    await this.handleCreateEvent(newEvent);
   }
 
   async handleCreateEvent(event: IEvent) {
