@@ -1,4 +1,4 @@
-<table class="min-w-full divide-y divide-gray-200 text-sm">
+<!-- <table class="min-w-full divide-y divide-gray-200 text-sm">
   <thead class="bg-gray-50">
     <tr>
       <th class="px-6 py-4 text-left font-semibold text-gray-700">Numéro</th>
@@ -46,4 +46,93 @@
       </td>
     </tr>
   </tbody>
-</table>
+</table> -->
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource">
+    <!-- Position Column -->
+    <ng-container matColumnDef="Numéro">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro</th>
+      <td mat-cell *matCellDef="let element" class="!text-center">
+        {{ element.id }}
+      </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="Evénement">
+      <th mat-header-cell *matHeaderCellDef>Evénement</th>
+      <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="Date de debut">
+      <th mat-header-cell *matHeaderCellDef>Date de debut</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.startedAt | titleCaseDateFr }}
+      </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="Date de fin">
+      <th mat-header-cell *matHeaderCellDef>Date de fin</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.endAt | titleCaseDateFr }}
+      </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="Lieu">
+      <th mat-header-cell *matHeaderCellDef>Lieu</th>
+      <td mat-cell *matCellDef="let element">{{ element.location.name }}</td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="Place maximum">
+      <th mat-header-cell *matHeaderCellDef>Place maximumn</th>
+      <td mat-cell *matCellDef="let element" class="!text-center">
+        {{ element.location.size }}
+      </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="Place libre">
+      <th mat-header-cell *matHeaderCellDef>Place libre</th>
+      <td mat-cell *matCellDef="let element" class="!text-center">48</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let element" class="!text-center">
+        <span
+          class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+        >
+          {{ element.status }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Action">
+      <th mat-header-cell *matHeaderCellDef>Action</th>
+      <td mat-cell *matCellDef="let element" class="!text-center">
+        <a
+          routerLink="/dashboard/event"
+          class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full text-xs"
+        >
+          Voir
+        </a>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+    aria-label="Select page of periodic elements"
+    class="padding-table"
+  >
+  </mat-paginator>
+</div>

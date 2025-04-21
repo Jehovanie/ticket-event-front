@@ -1,0 +1,12 @@
+table {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-select {
+  padding: 0 15px !important;
+}
+
+::ng-deep .mat-mdc-select-panel-above div.mat-mdc-select-panel {
+  opacity: 1 !important;
+  background-color: white !important;
+}
