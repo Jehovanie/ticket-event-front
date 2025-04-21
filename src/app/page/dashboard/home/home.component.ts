@@ -62,8 +62,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.initData();
-
-    console.log(this.data);
   }
 
   initData() {
@@ -85,8 +83,6 @@ export class HomeComponent implements OnInit {
             error: [],
           },
         };
-
-        console.log(this.data);
       });
     } catch (e) {
       this.data = {

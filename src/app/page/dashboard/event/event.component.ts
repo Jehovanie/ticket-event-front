@@ -95,7 +95,7 @@ export class EventComponent implements OnInit {
           actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
           filter: {
             time: '2023-10-01',
-            value: [{ vip: 3 }, { gold: 7 }, { fanzone: 51 }],
+            value: [{ vip: 131 }, { gold: 7 }, { fanzone: 51 }],
           },
         },
       },
