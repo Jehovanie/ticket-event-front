@@ -20,4 +20,8 @@ export class EventsService extends AppService<IEvent> {
   getAllEvents(page = 0): Observable<IEvent[]> {
     return this.getAll('/events');
   }
+
+  getDetailStatusEvent(eventId: any): Observable<any> {
+    return this.get(`/admin/events/${eventId}`);
+  }
 }

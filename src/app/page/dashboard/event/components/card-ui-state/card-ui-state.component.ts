@@ -3,15 +3,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartDoughnutType } from '../state-event/state-event.component';
+import { LoadingComponent } from '../../../../../components/loading/loading.component';
 
 @Component({
   selector: 'app-card-ui-state',
-  imports: [BaseChartDirective, CommonModule],
+  imports: [BaseChartDirective, CommonModule, LoadingComponent],
   templateUrl: './card-ui-state.component.html',
   styleUrl: './card-ui-state.component.css',
 })
 export class CardUiStateComponent implements OnInit {
   @Input() dataState!: ChartDoughnutType;
+  @Input() isLoading!: boolean;
 
   doughnutChartLabels: string[] = [];
   doughuntChartDatasetData: number[] = [];

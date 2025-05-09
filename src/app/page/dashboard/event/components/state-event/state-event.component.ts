@@ -22,6 +22,7 @@ export type ChartDoughnutType = {
 })
 export class StateEventComponent {
   @Input() eventStates!: EventStateType;
+  @Input() isLoading!: boolean;
 
   globalState!: ChartDoughnutType;
   actualState!: ChartDoughnutType;

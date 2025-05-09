@@ -8,6 +8,7 @@ import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { UsersService } from '../../../_core/services/users/users.service';
 import { IUser } from '../../../_core/model/user.interface';
 import { CommonModule } from '@angular/common';
+import { EventsService } from '../../../_core/services/events/events.service';
 
 export type EventStateType = {
   statusTicket: {
@@ -46,7 +47,7 @@ export class EventComponent implements OnInit {
     value: EventStateType;
     error: any[];
   } = {
-    isLoading: false,
+    isLoading: true,
     value: {
       statusTicket: {
         global: [],
@@ -57,7 +58,10 @@ export class EventComponent implements OnInit {
     error: [],
   };
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private eventService: EventsService
+  ) {}
 
   ngOnInit(): void {
     this.subscribeConsumer();
@@ -87,19 +91,33 @@ export class EventComponent implements OnInit {
   }
 
   initEventState() {
-    this.eventStates = {
-      isLoading: false,
-      value: {
-        statusTicket: {
-          global: [{ vip: 150 }, { gold: 200 }, { fanzone: 300 }],
-          actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
-          filter: {
-            time: '2023-10-01',
-            value: [{ vip: 131 }, { gold: 7 }, { fanzone: 51 }],
+    const eventId = 21;
+    try {
+      this.eventService.getDetailStatusEvent(eventId).subscribe((data) => {
+        const { statusTicket } = data;
+        this.eventStates = {
+          isLoading: false,
+          value: {
+            statusTicket: statusTicket,
+          },
+          error: [],
+        };
+      });
+    } catch (e) {
+      this.eventStates = {
+        isLoading: false,
+        value: {
+          statusTicket: {
+            global: [{ vip: 150 }, { gold: 200 }, { fanzone: 300 }],
+            actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
+            filter: {
+              time: '2023-10-01',
+              value: [{ vip: 131 }, { gold: 7 }, { fanzone: 51 }],
+            },
           },
         },
-      },
-      error: [],
-    };
+        error: [],
+      };
+    }
   }
 }

@@ -4,7 +4,11 @@
   </div>
 
   <div class="mb-2">
-    <app-state-event [eventStates]="eventStates.value"></app-state-event>
+     @if (eventStates.isLoading) {
+      <app-loading></app-loading>
+     } @else{
+      <app-state-event [isLoading]="eventStates.isLoading" [eventStates]="eventStates.value"></app-state-event>
+     }
   </div>
 
   <div class="overflow-x-auto bg-white shadow flex-1 flex flex-col mb-20">

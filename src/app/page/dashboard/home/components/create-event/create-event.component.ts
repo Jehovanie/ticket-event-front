@@ -246,13 +246,13 @@ export class CreateEventComponent implements OnInit {
     const location = {
       id: event.locationId(),
       name: event.locationName(),
-      size: event.locationSize(),
+      size: parseInt(event.locationSize()),
     };
 
     const category = {
       id: event.categoryId(),
       name: event.categoryName(),
-      color: event.categoryColor(),
+      color: event.categoryColor() || '',
     };
 
     const organizer = {
