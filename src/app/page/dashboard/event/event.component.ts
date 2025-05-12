@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ListConsumerComponent } from './components/list-consumer/list-consumer.component';
-import { FilterConsumerComponent } from './components/filter-consumer/filter-consumer.component';
 import { StateEventComponent } from './components/state-event/state-event.component';
-import { RouterLink } from '@angular/router';
-import { LoadingComponent } from '../../../components/loading/loading.component';
-import { catchError, map, Observable, of, startWith } from 'rxjs';
-import { UsersService } from '../../../_core/services/users/users.service';
-import { IUser } from '../../../_core/model/user.interface';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '../../../_core/services/events/events.service';
+import { LoadingComponent } from '../../../components/loading/loading.component';
 
 export type EventStateType = {
   statusTicket: {
@@ -24,24 +18,11 @@ export type EventStateType = {
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ListConsumerComponent,
-    FilterConsumerComponent,
-    StateEventComponent,
-    LoadingComponent,
-  ],
+  imports: [CommonModule, StateEventComponent, LoadingComponent],
   templateUrl: './event.component.html',
   styleUrl: './event.component.css',
 })
 export class EventComponent implements OnInit {
-  consumer$!: Observable<{
-    isLoadingListConsumer: boolean;
-    errorListConsumer: string | null;
-    consumers: IUser[];
-  }>;
-
   eventStates: {
     isLoading: boolean;
     value: EventStateType;
@@ -58,36 +39,10 @@ export class EventComponent implements OnInit {
     error: [],
   };
 
-  constructor(
-    private usersService: UsersService,
-    private eventService: EventsService
-  ) {}
+  constructor(private eventService: EventsService) {}
 
   ngOnInit(): void {
-    this.subscribeConsumer();
     this.initEventState();
-  }
-
-  subscribeConsumer() {
-    this.consumer$ = this.usersService.getAll('/users').pipe(
-      map((data) => ({
-        isLoadingListConsumer: false,
-        errorListConsumer: null,
-        consumers: data,
-      })),
-      startWith({
-        isLoadingListConsumer: true,
-        errorListConsumer: null,
-        consumers: [],
-      }),
-      catchError((error) =>
-        of({
-          isLoadingListConsumer: false,
-          errorListConsumer: error,
-          consumers: [],
-        })
-      )
-    );
   }
 
   initEventState() {
@@ -104,6 +59,7 @@ export class EventComponent implements OnInit {
         };
       });
     } catch (e) {
+      console.log(e);
       this.eventStates = {
         isLoading: false,
         value: {
