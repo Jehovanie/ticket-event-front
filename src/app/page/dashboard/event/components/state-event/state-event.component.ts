@@ -3,9 +3,10 @@ import { CardUiStateComponent } from '../card-ui-state/card-ui-state.component';
 import { EventStateType } from '../../event.component';
 
 export type ChartDoughnutType = {
+  isLoading: boolean;
   title: string;
   isFilter: boolean;
-  filterTime: string | null;
+  filterTime: Date | null;
   state: {
     [key: string]: {
       count: number;
@@ -22,6 +23,9 @@ export type ChartDoughnutType = {
 })
 export class StateEventComponent {
   @Input() eventStates!: EventStateType;
+  // @Input() isLoading!: boolean;
+
+  isLoading: boolean = false;
 
   globalState!: ChartDoughnutType;
   actualState!: ChartDoughnutType;
@@ -51,6 +55,7 @@ export class StateEventComponent {
   setGlobalState() {
     const copiedTabColors = JSON.parse(JSON.stringify(this.tabColors));
     this.globalState = {
+      isLoading: this.isLoading,
       title: 'Statique des tickets',
       isFilter: false,
       filterTime: null,
@@ -71,6 +76,7 @@ export class StateEventComponent {
   setActualtState() {
     const copiedTabColors = JSON.parse(JSON.stringify(this.tabColors));
     this.actualState = {
+      isLoading: this.isLoading,
       title: 'Statique des tickets actuels',
       isFilter: false,
       filterTime: null,
@@ -91,9 +97,10 @@ export class StateEventComponent {
   setFilterState() {
     const copiedTabColors = JSON.parse(JSON.stringify(this.tabColors));
     this.filterTimeState = {
+      isLoading: this.isLoading,
       title: 'Statique des tickets filtrés',
       isFilter: true,
-      filterTime: this.eventStates['statusTicket']['filter']['time'],
+      filterTime: new Date(this.eventStates['statusTicket']['filter']['time']),
       state: this.eventStates['statusTicket']['filter']['value'].map((item) => {
         const [key] = Object.keys(item);
         const value = item[key];

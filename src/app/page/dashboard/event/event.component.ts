@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ListConsumerComponent } from './components/list-consumer/list-consumer.component';
-import { FilterConsumerComponent } from './components/filter-consumer/filter-consumer.component';
 import { StateEventComponent } from './components/state-event/state-event.component';
-import { RouterLink } from '@angular/router';
-import { LoadingComponent } from '../../../components/loading/loading.component';
-import { catchError, map, Observable, of, startWith } from 'rxjs';
-import { UsersService } from '../../../_core/services/users/users.service';
-import { IUser } from '../../../_core/model/user.interface';
 import { CommonModule } from '@angular/common';
+import { EventsService } from '../../../_core/services/events/events.service';
+import { LoadingComponent } from '../../../components/loading/loading.component';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { IEvent } from '../../../_core/model/event.interface';
 
 export type EventStateType = {
   statusTicket: {
@@ -25,28 +23,25 @@ export type EventStateType = {
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    ListConsumerComponent,
-    FilterConsumerComponent,
     StateEventComponent,
     LoadingComponent,
+    RouterLink,
+    MatIconModule,
   ],
   templateUrl: './event.component.html',
   styleUrl: './event.component.css',
 })
 export class EventComponent implements OnInit {
-  consumer$!: Observable<{
-    isLoadingListConsumer: boolean;
-    errorListConsumer: string | null;
-    consumers: IUser[];
-  }>;
+  public eventID!: number;
 
-  eventStates: {
+  public event: Partial<IEvent> = { id: '1', title: "test", description: "totot" };
+
+  public eventStates: {
     isLoading: boolean;
     value: EventStateType;
     error: any[];
   } = {
-    isLoading: false,
+    isLoading: true,
     value: {
       statusTicket: {
         global: [],
@@ -57,49 +52,50 @@ export class EventComponent implements OnInit {
     error: [],
   };
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private eventService: EventsService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.subscribeConsumer();
+    const eventId = this.route.snapshot.paramMap.get('eventID') ?? '0';
+
+    this.eventID = parseInt(eventId);
+
     this.initEventState();
   }
 
-  subscribeConsumer() {
-    this.consumer$ = this.usersService.getAll('/users').pipe(
-      map((data) => ({
-        isLoadingListConsumer: false,
-        errorListConsumer: null,
-        consumers: data,
-      })),
-      startWith({
-        isLoadingListConsumer: true,
-        errorListConsumer: null,
-        consumers: [],
-      }),
-      catchError((error) =>
-        of({
-          isLoadingListConsumer: false,
-          errorListConsumer: error,
-          consumers: [],
-        })
-      )
-    );
-  }
-
   initEventState() {
-    this.eventStates = {
-      isLoading: false,
-      value: {
-        statusTicket: {
-          global: [{ vip: 150 }, { gold: 200 }, { fanzone: 300 }],
-          actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
-          filter: {
-            time: '2023-10-01',
-            value: [{ vip: 131 }, { gold: 7 }, { fanzone: 51 }],
+    try {
+      this.eventService.getDetailStatusEvent(this.eventID).subscribe((data) => {
+        const { events } = data;
+        const { event, statusTicket } = events;
+        this.event = { ...event };
+        
+        this.eventStates = {
+          isLoading: false,
+          value: {
+            statusTicket: statusTicket,
+          },
+          error: [],
+        };
+      });
+    } catch (e) {
+      console.log(e);
+      this.eventStates = {
+        isLoading: false,
+        value: {
+          statusTicket: {
+            global: [{ vip: 150 }, { gold: 200 }, { fanzone: 300 }],
+            actuel: [{ vip: 113 }, { gold: 182 }, { fanzone: 254 }],
+            filter: {
+              time: '2023-10-01',
+              value: [{ vip: 131 }, { gold: 7 }, { fanzone: 51 }],
+            },
           },
         },
-      },
-      error: [],
-    };
+        error: [],
+      };
+    }
   }
 }

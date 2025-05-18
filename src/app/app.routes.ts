@@ -20,7 +20,7 @@ export const routes: Routes = [
         component: DashboardComponent,
         children: [
           { path: '', component: HomeComponent },
-          { path: 'event', component: EventComponent },
+          { path: 'event/:eventID', component: EventComponent },
         ],
       },
       { path: 'contact', component: ContactComponent },
