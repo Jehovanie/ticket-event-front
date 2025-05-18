@@ -1,8 +1,14 @@
 <div>
 	<div class="p-2 bg-white mb-2">
-		<a routerlink="/dashboard" class="font-bold">
-			back to the list events
-		</a>
+		<div class="flex items-center align-center">
+			<a routerLink="/dashboard" class="font-light flex items-end gap-1">
+				<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="home"></mat-icon>
+			</a>
+			<span>/</span>
+			<a *ngIf="!eventStates.isLoading" routerLink="/dashboard" class="font-light flex items-end gap-1 underline underline-offset-4">
+				Event: {{ event.title }}
+			</a>
+		</div>
 	</div>
 
 	<div class="mb-2">

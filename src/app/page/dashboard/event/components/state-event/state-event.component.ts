@@ -6,7 +6,7 @@ export type ChartDoughnutType = {
   isLoading: boolean;
   title: string;
   isFilter: boolean;
-  filterTime: string | null;
+  filterTime: Date | null;
   state: {
     [key: string]: {
       count: number;
@@ -100,7 +100,7 @@ export class StateEventComponent {
       isLoading: this.isLoading,
       title: 'Statique des tickets filtrés',
       isFilter: true,
-      filterTime: this.eventStates['statusTicket']['filter']['time'],
+      filterTime: new Date(this.eventStates['statusTicket']['filter']['time']),
       state: this.eventStates['statusTicket']['filter']['value'].map((item) => {
         const [key] = Object.keys(item);
         const value = item[key];

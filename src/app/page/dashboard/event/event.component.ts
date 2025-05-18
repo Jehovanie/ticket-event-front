@@ -3,6 +3,9 @@ import { StateEventComponent } from './components/state-event/state-event.compon
 import { CommonModule } from '@angular/common';
 import { EventsService } from '../../../_core/services/events/events.service';
 import { LoadingComponent } from '../../../components/loading/loading.component';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { IEvent } from '../../../_core/model/event.interface';
 
 export type EventStateType = {
   statusTicket: {
@@ -18,12 +21,22 @@ export type EventStateType = {
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [CommonModule, StateEventComponent, LoadingComponent],
+  imports: [
+    CommonModule,
+    StateEventComponent,
+    LoadingComponent,
+    RouterLink,
+    MatIconModule,
+  ],
   templateUrl: './event.component.html',
   styleUrl: './event.component.css',
 })
 export class EventComponent implements OnInit {
-  eventStates: {
+  public eventID!: number;
+
+  public event: Partial<IEvent> = { id: '1', title: "test", description: "totot" };
+
+  public eventStates: {
     isLoading: boolean;
     value: EventStateType;
     error: any[];
@@ -39,17 +52,26 @@ export class EventComponent implements OnInit {
     error: [],
   };
 
-  constructor(private eventService: EventsService) {}
+  constructor(
+    private eventService: EventsService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    const eventId = this.route.snapshot.paramMap.get('eventID') ?? '0';
+
+    this.eventID = parseInt(eventId);
+
     this.initEventState();
   }
 
   initEventState() {
-    const eventId = 21;
     try {
-      this.eventService.getDetailStatusEvent(eventId).subscribe((data) => {
-        const { statusTicket } = data;
+      this.eventService.getDetailStatusEvent(this.eventID).subscribe((data) => {
+        const { events } = data;
+        const { event, statusTicket } = events;
+        this.event = { ...event };
+        
         this.eventStates = {
           isLoading: false,
           value: {
