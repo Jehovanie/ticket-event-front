@@ -7,16 +7,17 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IEvent } from '../../../../../_core/model/event.interface';
 import { CommonModule } from '@angular/common';
+
 import { BtnLoadingComponent } from '../../../../../components/btn-loading/btn-loading.component';
-import { EventsService } from '../../../../../_core/services/events/events.service';
-import { ICategory } from '../../../../../_core/model/category.interface';
-import { CategoryService } from '../../../../../_core/services/category/category.service';
-import { IOrganizer } from '../../../../../_core/model/organizer.interface';
-import { OrganizerService } from '../../../../../_core/services/organizer/organizer.service';
-import { LocationService } from '../../../../../_core/services/location/location.service';
-import { ILocation } from '../../../../../_core/model/location.interface';
+
+import { EventsService } from '@/app/_core/services/events/events.service';
+import { CategoryService } from '@/app/_core/services/category/category.service';
+import { OrganizerService } from '@/app/_core/services/organizer/organizer.service';
+import { LocationService } from '@/app/_core/services/location/location.service';
+
+import { ICategory, IEvent, IOrganizer , ILocation } from '@/app/_core/model';
+
 
 @Component({
   selector: 'app-create-event',

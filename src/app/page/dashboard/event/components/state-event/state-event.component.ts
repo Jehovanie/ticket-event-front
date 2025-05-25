@@ -1,19 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CardUiStateComponent } from '../card-ui-state/card-ui-state.component';
 import { EventStateType } from '../../event.component';
+import { ChartDoughnutType } from './type';
 
-export type ChartDoughnutType = {
-  isLoading: boolean;
-  title: string;
-  isFilter: boolean;
-  filterTime: Date | null;
-  state: {
-    [key: string]: {
-      count: number;
-      color: string;
-    };
-  }[];
-};
 
 @Component({
   selector: 'app-state-event',

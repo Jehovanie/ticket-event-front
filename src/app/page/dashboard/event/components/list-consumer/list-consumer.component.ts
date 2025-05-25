@@ -1,6 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { IUser } from '../../../../../_core/model/user.interface';
-
 @Component({
   selector: 'app-list-consumer',
   imports: [],

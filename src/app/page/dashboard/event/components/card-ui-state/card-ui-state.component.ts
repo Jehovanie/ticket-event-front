@@ -3,8 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
-import { ChartDoughnutType } from '../state-event/state-event.component';
-import { LoadingComponent } from '../../../../../components/loading/loading.component';
+import { LoadingComponent } from '@/app/components/loading/loading.component';
+import { ChartDoughnutType } from '../state-event/type';
 
 @Component({
   selector: 'app-card-ui-state',
