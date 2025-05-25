@@ -1,4 +1,4 @@
-export interface IPaymentTicker {
+export interface IPaymentTicket {
     id?: string;
     ticketId?: string;
     userId?: string;

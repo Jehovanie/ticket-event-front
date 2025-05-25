@@ -1,59 +1,44 @@
-# Review
+# TicketUp Admin
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+This is the admin panel for the TicketUp project. It provides tools for managing users, events, and ticket sales.
 
-## Development server
+Vous pouvez également explorer le côté API en consultant le dépôt [TicketUp API](https://github.com/jehovanie/ticketup-api) sur GitHub.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- User management (create, update, delete)
+- Event creation and editing
+- Ticket sales tracking
+- Analytics dashboard
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Technologies utilisées
 
-## Code scaffolding
+- TypeScript (v4.x)
+- Angular (v16)
+- TailwindCSS (v3)
+- Angular Material (v16)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Getting Started
 
-```bash
-ng generate component component-name
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/jehovanie/ticketup-admin.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Folder Structure
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- `/src` - Source code.
+- `/public` - Static files.
+- `/src/app/app.route.ts` - Root definition.
+- `/src/app/environements` - environements definition.
+- `/src/app/_core` - Defition entity model and services all service
+- `/src/app/_utils` - definition variable const and type constant.
+- `/src/app/environements` - Defintion d'environements

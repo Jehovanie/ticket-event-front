@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+
 import { ListEventComponent } from './components/list-event/list-event.component';
 import { FilterEventComponent } from './components/filter-event/filter-event.component';
 import { CreateEventComponent } from './components/create-event/create-event.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import { CommonModule } from '@angular/common';
-import { EventsService } from '../../../_core/services/events/events.service';
-import { CategoryService } from '../../../_core/services/category/category.service';
-import { OrganizerService } from '../../../_core/services/organizer/organizer.service';
-import { IEvent } from '../../../_core/model/event.interface';
-import { ICategory } from '../../../_core/model/category.interface';
-import { IOrganizer } from '../../../_core/model/organizer.interface';
+
+import { EventsService } from '@/app/_core/services/events/events.service';
+import { CategoryService } from '@/app/_core/services/category/category.service';
+import { OrganizerService } from '@/app/_core/services/organizer/organizer.service';
+
+import { ICategory, IEvent, IOrganizer } from '@/app/_core/model';
 
 type DataType<T> = {
   succes: boolean;

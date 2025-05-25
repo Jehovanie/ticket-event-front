@@ -1,12 +1,11 @@
 import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
-import { IEvent } from '../../../../../_core/model/event.interface';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TitleCaseDateFrPipe } from '../../../../../pipe/titleCaseDateFr';
-
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { TitleCaseDateFrPipe } from '@/app/_utils/pipe/titleCaseDateFr';
 
+import { IEvent } from '@/app/_core/model';
 
 @Component({
   selector: 'app-list-event',
