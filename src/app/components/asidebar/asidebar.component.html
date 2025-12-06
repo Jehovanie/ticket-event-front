@@ -1,31 +1,37 @@
-<aside class="bg-gray-800 text-white p-6 fixed top-0 left-0 h-full">
-	<div class="flex items-center justify-center mb-8">
-		<span class="text-2xl font-bold">MyLogo</span>
+<aside [class.w-auto]="!isCollapsed" class="bg-primary text-white fixed top-0 left-0 h-screen flex flex-col transition-all duration-300">
+	<div class="flex items-center justify-between py-6 px-6 flex-shrink-0">
+		<span [class.hidden]="isCollapsed" class="text-2xl font-bold transition-all duration-300">MyLogo</span>
+		<button (click)="toggleSidebar()" class="flex items-center justify-center hover:bg-angular-700 rounded-md p-2 transition-colors flex-shrink-0">
+			<mat-icon>{{ isCollapsed ? 'expand_right' : 'expand_left' }}</mat-icon>
+		</button>
 	</div>
-	<nav class="space-y-4">
-		<a routerLink="/dashboard" routerLinkActive="bg-gray-700" class="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 p-2 rounded-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewbox="0 0 24 24" class="h-5 w-5 mr-3" aria-hidden="true">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"></path>
-			</svg>
-			Dashboard
-		</a>
-		<a routerLink="/setting" routerLinkActive="bg-gray-700" class="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 p-2 rounded-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewbox="0 0 24 24" class="h-5 w-5 mr-3" aria-hidden="true">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M19 6H5M19 18H5"></path>
-			</svg>
-			Settings
-		</a>
-		<a routerLink="/notification" routerLinkActive="bg-gray-700" class="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 p-2 rounded-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewbox="0 0 24 24" class="h-5 w-5 mr-3" aria-hidden="true">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-			</svg>
-			Notifications
-		</a>
-		<a routerLink="/auth/logout" routerLinkActive="bg-gray-700" class="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 p-2 rounded-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewbox="0 0 24 24" class="h-5 w-5 mr-3" aria-hidden="true">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-			</svg>
-			Logout
-		</a>
+	<div class="border-b border-gray-500 flex-shrink-0"></div>
+	<nav class="grid gap-4 p-6 overflow-y-auto flex-1 transition-all duration-300" [class.grid-cols-1]="isCollapsed" [class.grid-cols-2]="!isCollapsed">
+		<app-navbar-link [objectLink]="{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Événements', icon: 'event', route: '/events', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Organisateurs', icon: 'people', route: '/organizers', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Utilisateurs', icon: 'person', route: '/users', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Tickets & Ventes', icon: 'shopping_cart', route: '/tickets', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Paiements', icon: 'payment', route: '/payments', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Support & Modération', icon: 'support_agent', route: '/support', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Notifications', icon: 'notifications', route: '/notifications', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Contenus & Paramètres', icon: 'article', route: '/content', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Sécurité & Rôles', icon: 'security', route: '/security', isCollapsed: isCollapsed }"></app-navbar-link>
+		<app-navbar-link [objectLink]="{ label: 'Paramètres système', icon: 'settings', route: '/system-settings', isCollapsed: isCollapsed }"></app-navbar-link>
 	</nav>
+	<div class="border-t border-gray-500 flex-shrink-0"></div>
+	<div [class.flex-col]="isCollapsed" [class.flex-row]="!isCollapsed" class="flex items-center justify-between p-6 flex-shrink-0 transition-all duration-300">
+		<div [class.hidden]="isCollapsed" class="flex items-center gap-3 min-w-0 transition-all duration-300">
+			<div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+				<mat-icon class="text-white">account_circle</mat-icon>
+			</div>
+			<div class="min-w-0 truncate">
+				<p class="text-sm font-semibold truncate">{{ userName }}</p>
+				<p class="text-xs text-gray-300 truncate">{{ userEmail }}</p>
+			</div>
+		</div>
+		<a routerLink="/auth/logout" class="flex items-center justify-center w-8 h-8 hover:bg-angular-700 rounded-md transition-colors flex-shrink-0">
+			<mat-icon class="text-lg">logout</mat-icon>
+		</a>
+	</div>
 </aside>

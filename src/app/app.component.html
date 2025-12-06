@@ -1,12 +1,9 @@
 <div class="w-screen h-screen overflow-hidden">
   <div class="flex w-full h-full">
-    <div class="w-44 h-full">
-      <app-asidebar></app-asidebar>
+    <div class="h-full flex-shrink-0 transition-all duration-300" [ngClass]="{'w-25': isCollapsed, 'w-92': !isCollapsed}">
+      <app-asidebar [isCollapsed]="isCollapsed" (isCollapsedChange)="onSidebarCollapsedChange($event)"></app-asidebar>
     </div>
-    <div class="flex-1 h-full flex flex-col">
-      <div class="navbar h-[15%] max-h-24">
-        <app-navbar></app-navbar>
-      </div>
+    <div class="h-full flex flex-col w-full transition-all duration-100">
       <div class="flex-1 p-6 bg-gray-100 overflow-y-auto">
         <router-outlet />
       </div>
