@@ -1,4 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+
+@theme {
+  --color-primary: #121063;
+  --color-secondary: #3ab7bf;
+  --color-danger: #78dcca;
+}
+
+
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
