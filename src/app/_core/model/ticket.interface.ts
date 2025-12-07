@@ -1,4 +1,4 @@
-import { IStatus, ITypeTicket } from '../../_utils/type';
+import { IStatus, ITypeTicket } from '../../_shared/utils/type';
 
 export interface ITicket {
   id: string;
