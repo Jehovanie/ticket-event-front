@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '@/app/_core/services/events/events.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { IEvent } from '@/app/_core/model';
 import { StateEventComponent } from './components/state-event/state-event.component';
@@ -25,7 +25,6 @@ export type EventStateType = {
     CommonModule,
     StateEventComponent,
     LoadingComponent,
-    RouterLink,
     MatIconModule,
   ],
   templateUrl: './event-detail.component.html',

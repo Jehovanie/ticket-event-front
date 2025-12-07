@@ -11,6 +11,7 @@ import { OrganizerService } from '@/app/_core/services/organizer/organizer.servi
 
 import { ICategory, IEvent, IOrganizer } from '@/app/_core/model';
 import { LoadingComponent } from '@/app/_shared/components/loading/loading.component';
+import { RouterLink } from '@angular/router';
 
 type DataType<T> = {
   succes: boolean;
@@ -23,7 +24,7 @@ type DataType<T> = {
   imports: [
     ListEventComponent,
     FilterEventComponent,
-    CreateEventComponent,
+    RouterLink,
     LoadingComponent,
     CommonModule,
   ],

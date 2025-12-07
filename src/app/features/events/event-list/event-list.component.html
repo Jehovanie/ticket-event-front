@@ -1,16 +1,39 @@
-<div class="w-full h-full">
-  <div *ngIf="data.isLoading" class="w-full h-full">
-    <app-loading></app-loading>
-  </div>
-  <div *ngIf="!data.isLoading" class="overflow-x-auto bg-white shadow">
-    <div
-      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 shadow"
-    >
-      <app-filter-event></app-filter-event>
-      <app-create-event></app-create-event>
+<div class="w-full h-full flex flex-col">
+  <!-- Header Section -->
+  <div class="bg-gradient-to-r from-primary to-primary-dark px-8 py-3 shadow-lg">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-white">Événements</h1>
+          <p class="text-white text-opacity-80 text-sm mt-1">Gérez tous vos événements en un seul endroit</p>
+        </div>
+      </div>
+      <a routerLink="/events/new" class="flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:shadow-xl transition-all duration-200 hover:scale-105">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Créer un événement
+      </a>
     </div>
-    <div>
-      <app-list-event [events]="data.events.items"></app-list-event>
+  </div>
+
+  <!-- Content Section -->
+  <div class="flex-1 overflow-hidden flex flex-col">
+    <div *ngIf="data.isLoading" class="w-full h-full">
+      <app-loading></app-loading>
+    </div>
+    <div *ngIf="!data.isLoading" class="overflow-x-auto bg-white shadow flex flex-col flex-1">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 shadow">
+        <app-filter-event></app-filter-event>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <app-list-event [events]="data.events.items"></app-list-event>
+      </div>
     </div>
   </div>
 </div>
