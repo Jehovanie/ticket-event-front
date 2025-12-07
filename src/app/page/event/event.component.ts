@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { StateEventComponent } from './components/state-event/state-event.component';
 import { CommonModule } from '@angular/common';
 import { EventsService } from '@/app/_core/services/events/events.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { IEvent } from '@/app/_core/model';
 import { LoadingComponent } from '@/app/components/loading/loading.component';
+import { StateEventComponent } from './components/state-event/state-event.component';
 
 export type EventStateType = {
   statusTicket: {

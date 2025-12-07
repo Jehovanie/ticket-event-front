@@ -9,7 +9,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { BtnLoadingComponent } from '../../../../../components/btn-loading/btn-loading.component';
 
 import { EventsService } from '@/app/_core/services/events/events.service';
 import { CategoryService } from '@/app/_core/services/category/category.service';
@@ -17,6 +16,7 @@ import { OrganizerService } from '@/app/_core/services/organizer/organizer.servi
 import { LocationService } from '@/app/_core/services/location/location.service';
 
 import { ICategory, IEvent, IOrganizer , ILocation } from '@/app/_core/model';
+import { BtnLoadingComponent } from '@/app/components/btn-loading/btn-loading.component';
 
 
 @Component({
