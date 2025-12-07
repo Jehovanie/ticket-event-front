@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { ListEventComponent } from './components/list-event/list-event.component';
 import { FilterEventComponent } from './components/filter-event/filter-event.component';
 import { CreateEventComponent } from './components/create-event/create-event.component';
-import { LoadingComponent } from '../../../components/loading/loading.component';
 import { CommonModule } from '@angular/common';
 
 import { EventsService } from '@/app/_core/services/events/events.service';
@@ -11,6 +10,7 @@ import { CategoryService } from '@/app/_core/services/category/category.service'
 import { OrganizerService } from '@/app/_core/services/organizer/organizer.service';
 
 import { ICategory, IEvent, IOrganizer } from '@/app/_core/model';
+import { LoadingComponent } from '@/app/components/loading/loading.component';
 
 type DataType<T> = {
   succes: boolean;
@@ -19,7 +19,7 @@ type DataType<T> = {
 };
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-events',
   imports: [
     ListEventComponent,
     FilterEventComponent,
@@ -27,10 +27,10 @@ type DataType<T> = {
     LoadingComponent,
     CommonModule,
   ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
+  templateUrl: './events.component.html',
+  styleUrl: './events.component.css',
 })
-export class HomeComponent implements OnInit {
+export class EventsComponent implements OnInit {
   public data: {
     isLoading: boolean;
     events: DataType<IEvent>;
