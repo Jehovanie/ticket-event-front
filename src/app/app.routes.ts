@@ -1,39 +1,28 @@
 import { Routes } from '@angular/router';
-import { AboutComponent } from './page/about/about.component';
-import { SigninComponent } from './page/auth/signin/signin.component';
-import { SignupComponent } from './page/auth/signup/signup.component';
-import { DetailsComponent } from './page/details/details.component';
-import { ContactComponent } from './page/contact/contact.component';
-import { LogoutComponent } from './page/auth/logout/logout.component';
-import { SettingComponent } from './page/setting/setting.component';
-import { DashboardComponent } from './page/dashboard/dashboard.component';
-import { EventComponent } from './page/event/event.component';
-import { EventsComponent } from './page/events/events.component';
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 
 export const routes: Routes = [
   {
     path: '',
+    component: MainLayoutComponent,
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
       {
         path: 'dashboard',
-        component: DashboardComponent,
+        loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES),
       },
-      { path: 'events', component: EventsComponent },
-      { path: 'contact', component: ContactComponent },
-      { path: 'events/:eventID', component: EventComponent },
-      { path: 'detail/:id', component: DetailsComponent },
-      { path: 'about', component: AboutComponent },
-      { path: 'setting', component: SettingComponent },
-    ],
+      {
+        path: 'events',
+        loadChildren: () => import('./features/events/events.routes').then(m => m.EVENTS_ROUTES)
+      }
+    ]
   },
   {
-    path: 'auth',
-    children: [
-      { path: 'signin', component: SigninComponent },
-      { path: 'signup', component: SignupComponent },
-      { path: 'logout', component: LogoutComponent },
-    ],
-  },
-  { path: '**', redirectTo: '' },
+    path: '**',
+    redirectTo: 'dashboard'
+  }
 ];
