@@ -1,243 +1,454 @@
-<button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm font-medium shadow transition cursor-pointer" (click)="openModal()">
-	➕ Créer un événement
+<!-- Trigger Button -->
+<button 
+	class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer" 
+	(click)="openModal()"
+>
+	<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+	</svg>
+	Créer un événement
 </button>
 
-<div id="eventModal" class="fixed inset-0 flex hidden items-center justify-center z-50 bg-opacity-40 backdrop-blur-[2px]">
-	<div class="bg-white w-[80vw] max-h-[90vh] overflow-auto p-6 rounded shadow-xl relative">
-		<button (click)="closeModal()" class="absolute top-3 right-3 text-gray-500 cursor-pointer hover:text-red-500 text-xl font-bold" *ngIf="!isSubmitting">
-			&times;
-		</button>
+<!-- Modal Overlay -->
+<div id="eventModal" class="fixed inset-0 hidden items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm p-4">
+	<div class="bg-white w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl relative flex flex-col animate-in fade-in duration-200">
+		<!-- Modal Header -->
+		<div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+			<div>
+				<h2 class="text-xl font-semibold text-white">Créer un nouvel événement</h2>
+				<p class="text-blue-100 text-sm mt-1">Remplissez les informations ci-dessous</p>
+			</div>
+			<button 
+				(click)="closeModal()" 
+				class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-all duration-200" 
+				*ngIf="!isSubmitting"
+			>
+				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+				</svg>
+			</button>
+		</div>
 
-		<h2 class="text-lg font-semibold mb-4 text-gray-800">
-			Créer un nouvel événement
-		</h2>
-
-		<form (submit)="onSubmit()" novalidate id="eventForm" class="space-y-4">
-			<div class="grid grid-cols-2 gap-4 w-full">
-				<div class="border-r-1 border-gray-300 pr-4">
-					<div class="border-b border-gray-300 mb-2">
-						<h6 class="text-sm font-medium text-gray-800">
-							Information sur l'événement
-						</h6>
-					</div>
-
-					<div class="mb-2">
-						<label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'événement
-						</label>
-						<input type="text" placeholder="Nom de l'événement" required [value]="event.title()" (input)="event.title.set($any($event.target).value)" class="w-full border cursor-pointer h-8 border-gray-300 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-					</div>
-
-					<div class="mb-2">
-						<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-						<textarea type="text" placeholder="Description de l'événement" required [value]="event.description()" (input)="event.description.set($any($event.target).value)" class="w-full border border-gray-300 cursor-pointer text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
-					</div>
-
-					<div class="mb-2">
-						<label class="block text-sm font-medium text-gray-700 mb-1">Image de l'événement
-						</label>
-						<input type="file" class="w-full border cursor-pointer h-8 border-gray-300 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-					</div>
-
-					<div class="grid grid-cols-2 gap-4 mb-2">
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
-							<input type="date" required [value]="event.startedAt()" (input)="event.startedAt.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-						</div>
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
-							<input type="date" required [value]="event.endAt()" (input)="event.endAt.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Lieu de l'événement</label>
-							<select required [value]="event.locationId()" (input)="event.locationId.set($any($event.target).value)" class="w-full border cursor-pointer border-gray-300 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-								<option value="">-- Choisir un lieu --</option>
-								<ng-container *ngFor="let locations of locations">
-									<option [value]="locations.id" data-sieze="location.size">
-										{{ locations.name }}
-									</option>
-								</ng-container>
-							</select>
-						</div>
-						<div>
-							<button type="button" class="cursor-pointer border w-full border-black text-black px-4 py-2 text-sm font-medium" (click)="isCreateNewLocation = !isCreateNewLocation">
-								Créer une nouvelle location
-							</button>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-							<select required [value]="event.categoryId()" (input)="event.categoryId.set($any($event.target).value)" class="w-full border cursor-pointer border-gray-300 px-3 text-sm py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-								<option value="">-- Choisir une catégorie --</option>
-								<ng-container *ngFor="let category of categories">
-									<option [value]="category.id">{{ category.name }}</option>
-								</ng-container>
-							</select>
-						</div>
-						<div>
-							<button type="button" class="cursor-pointer border text-center w-full border-black text-black px-4 py-2 text-sm font-medium" (click)="isCreateNewCategory = !isCreateNewCategory">
-								Créer une nouvelle categorie
-							</button>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Organisateur</label>
-							<select required [value]="event.organizerId()" (input)="event.organizerId.set($any($event.target).value)" class="w-full border cursor-pointer border-gray-300 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-								<option value="">-- Choisir une organisateur --</option>
-								<ng-container *ngFor="let organizer of organizers">
-									<option [value]="organizer.id">{{ organizer.name }}</option>
-								</ng-container>
-							</select>
-						</div>
-						<div>
-							<button type="button" class="cursor-pointer border w-full border-black text-black px-4 py-2 text-sm font-medium" (click)="isCreateNewOrganizer = !isCreateNewOrganizer">
-								Créer une nouvelle organisateur
-							</button>
-						</div>
-					</div>
-				</div>
-				<div>
-					<div class="mb-4">
-						<div class="border-b border-gray-300 mb-2">
-							<div class="flex justify-between items-center">
-								<h6 class="text-sm font-medium text-gray-800">
-									Information sur le ticket de l'événement
-								</h6>
-								<div class="cursor-pointer" (click)="addTicket()">➕</div>
+		<!-- Modal Body -->
+		<div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+			<form (submit)="onSubmit()" novalidate id="eventForm" class="space-y-6">
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<!-- Left Column: Event Information -->
+					<div class="space-y-6">
+						<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+							<div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+								</svg>
+								<h3 class="text-base font-semibold text-gray-800">Informations générales</h3>
 							</div>
-						</div>
-						<div *ngFor="let ticket of event.tickets()" class="grid grid-cols-3 gap-2 items-end w-full mb-2">
-							<div>
+
+							<div class="space-y-4">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">
-										Type de ticket
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										Nom de l'événement <span class="text-red-500">*</span>
 									</label>
-									<input type="text" placeholder="Type de ticket. (ex: VIP)" [value]="ticket.name()" (input)="updateTicketName(ticket.id(), $any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+									<input 
+										type="text" 
+										placeholder="Ex: Concert de jazz" 
+										required 
+										[value]="event.title()" 
+										(input)="event.title.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+									/>
 								</div>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-1">Prix</label>
-								<input type="number" required placeholder="Nombre de places" [value]="ticket.price()" (input)="updateTicketPrice(ticket.id(), $any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-							</div>
-							<div>
-								<div class="flex items-center justify-between">
-									<label class="block text-sm font-medium text-gray-700">Nombre de place maximum</label>
-									<button type="button" (click)="removeTicket(ticket.id())" class="text-gray-500 cursor-pointer hover:text-red-500 text-xl font-bold">
-										&times;
-									</button>
-								</div>
+
 								<div>
-									<input type="number" required placeholder="Nombre de places" [value]="ticket.size()" (input)="updateTicketSize(ticket.id(), $any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										Description <span class="text-red-500">*</span>
+									</label>
+									<textarea 
+										placeholder="Décrivez votre événement..." 
+										required 
+										rows="4"
+										[value]="event.description()" 
+										(input)="event.description.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+									></textarea>
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										<div class="flex items-center gap-2">
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+											</svg>
+											Image de l'événement
+										</div>
+									</label>
+									<input 
+										type="file" 
+										accept="image/*"
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer"
+									/>
+								</div>
+
+								<div class="grid grid-cols-2 gap-4">
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">
+											Date de début <span class="text-red-500">*</span>
+										</label>
+										<input 
+											type="date" 
+											required 
+											[value]="event.startedAt()" 
+											(input)="event.startedAt.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">
+											Date de fin <span class="text-red-500">*</span>
+										</label>
+										<input 
+											type="date" 
+											required 
+											[value]="event.endAt()" 
+											(input)="event.endAt.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										Lieu <span class="text-red-500">*</span>
+									</label>
+									<div class="flex gap-2">
+										<select 
+											required 
+											[value]="event.locationId()" 
+											(input)="event.locationId.set($any($event.target).value)" 
+											class="flex-1 border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer"
+										>
+											<option value="">-- Sélectionner un lieu --</option>
+											<ng-container *ngFor="let location of locations">
+												<option [value]="location.id">{{ location.name }}</option>
+											</ng-container>
+										</select>
+										<button 
+											type="button" 
+											(click)="isCreateNewLocation = !isCreateNewLocation"
+											class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all"
+											[class.bg-blue-50]="isCreateNewLocation"
+											[class.border-blue-500]="isCreateNewLocation"
+											[class.text-blue-700]="isCreateNewLocation"
+										>
+											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+											</svg>
+										</button>
+									</div>
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										Catégorie <span class="text-red-500">*</span>
+									</label>
+									<div class="flex gap-2">
+										<select 
+											required 
+											[value]="event.categoryId()" 
+											(input)="event.categoryId.set($any($event.target).value)" 
+											class="flex-1 border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer"
+										>
+											<option value="">-- Sélectionner une catégorie --</option>
+											<ng-container *ngFor="let category of categories">
+												<option [value]="category.id">{{ category.name }}</option>
+											</ng-container>
+										</select>
+										<button 
+											type="button" 
+											(click)="isCreateNewCategory = !isCreateNewCategory"
+											class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all"
+											[class.bg-blue-50]="isCreateNewCategory"
+											[class.border-blue-500]="isCreateNewCategory"
+											[class.text-blue-700]="isCreateNewCategory"
+										>
+											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+											</svg>
+										</button>
+									</div>
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">
+										Organisateur <span class="text-red-500">*</span>
+									</label>
+									<div class="flex gap-2">
+										<select 
+											required 
+											[value]="event.organizerId()" 
+											(input)="event.organizerId.set($any($event.target).value)" 
+											class="flex-1 border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer"
+										>
+											<option value="">-- Sélectionner un organisateur --</option>
+											<ng-container *ngFor="let organizer of organizers">
+												<option [value]="organizer.id">{{ organizer.name }}</option>
+											</ng-container>
+										</select>
+										<button 
+											type="button" 
+											(click)="isCreateNewOrganizer = !isCreateNewOrganizer"
+											class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all"
+											[class.bg-blue-50]="isCreateNewOrganizer"
+											[class.border-blue-500]="isCreateNewOrganizer"
+											[class.text-blue-700]="isCreateNewOrganizer"
+										>
+											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+											</svg>
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div *ngIf="isCreateNewLocation" class="mb-4">
-						<div class="border-b border-gray-300 mb-2">
-							<h6 class="text-sm font-medium text-gray-800">
-								Information sur le lieu
-							</h6>
-						</div>
-						<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-							<div>
+
+						<!-- New Location Form -->
+						<div *ngIf="isCreateNewLocation" class="bg-white rounded-lg shadow-sm border border-blue-200 p-5">
+							<div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+								</svg>
+								<h3 class="text-base font-semibold text-gray-800">Nouveau lieu</h3>
+							</div>
+							<div class="grid grid-cols-2 gap-4">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Adress</label>
-									<input type="text" placeholder="Adresse de l'événement" [value]="event.locationName()" (input)="event.locationName.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">Nom du lieu</label>
+									<input 
+										type="text" 
+										placeholder="Ex: Stade municipal" 
+										[value]="event.locationName()" 
+										(input)="event.locationName.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+									/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">Capacité</label>
+									<input 
+										type="number" 
+										placeholder="1000" 
+										[value]="event.locationSize()" 
+										(input)="event.locationSize.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+									/>
 								</div>
 							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-1">Nombre de place maximum</label>
-								<input type="number" required placeholder="Nombre de places" [value]="event.locationSize()" (input)="event.locationSize.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+						</div>
+
+						<!-- New Category Form -->
+						<div *ngIf="isCreateNewCategory" class="bg-white rounded-lg shadow-sm border border-blue-200 p-5">
+							<div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+								</svg>
+								<h3 class="text-base font-semibold text-gray-800">Nouvelle catégorie</h3>
+							</div>
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">Nom</label>
+									<input 
+										type="text" 
+										placeholder="Ex: Concert" 
+										[value]="event.categoryName()" 
+										(input)="event.categoryName.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+									/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">Couleur</label>
+									<input 
+										type="color" 
+										[value]="event.categoryColor()" 
+										(input)="event.categoryColor.set($any($event.target).value)" 
+										class="w-full h-10 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<!-- New Organizer Form -->
+						<div *ngIf="isCreateNewOrganizer" class="bg-white rounded-lg shadow-sm border border-blue-200 p-5">
+							<div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+								</svg>
+								<h3 class="text-base font-semibold text-gray-800">Nouvel organisateur</h3>
+							</div>
+							<div class="space-y-4">
+								<div class="grid grid-cols-2 gap-4">
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">Nom</label>
+										<input 
+											type="text" 
+											placeholder="Nom de l'organisateur" 
+											[value]="event.organizerName()" 
+											(input)="event.organizerName.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+										<input 
+											type="email" 
+											placeholder="email@exemple.com" 
+											[value]="event.organizerEmail()" 
+											(input)="event.organizerEmail.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+								</div>
+								<div class="grid grid-cols-2 gap-4">
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">Téléphone</label>
+										<input 
+											type="text" 
+											placeholder="+33 6 12 34 56 78" 
+											[value]="event.organizerPhone()" 
+											(input)="event.organizerPhone.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+									<div>
+										<label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse</label>
+										<input 
+											type="text" 
+											placeholder="123 Rue Example" 
+											[value]="event.organizerAddress()" 
+											(input)="event.organizerAddress.set($any($event.target).value)" 
+											class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										/>
+									</div>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 mb-1.5">Site web</label>
+									<input 
+										type="text" 
+										placeholder="https://exemple.com" 
+										[value]="event.organizerWebsite()" 
+										(input)="event.organizerWebsite.set($any($event.target).value)" 
+										class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
 
-					<div *ngIf="isCreateNewCategory" class="mb-4">
-						<div class="border-b border-gray-300 mb-2">
-							<h6 class="text-sm font-medium text-gray-800">
-								Information sur la categorie de l'événement
-							</h6>
-						</div>
-						<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-							<div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-									<input type="text" placeholder="Nom de la catégorie" [value]="event.categoryName()" (input)="event.categoryName.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+					<!-- Right Column: Tickets -->
+					<div class="space-y-6">
+						<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+							<div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+								<div class="flex items-center gap-2">
+									<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+									</svg>
+									<h3 class="text-base font-semibold text-gray-800">Types de tickets</h3>
 								</div>
+								<button 
+									type="button"
+									(click)="addTicket()" 
+									class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
+								>
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+									</svg>
+									Ajouter
+								</button>
 							</div>
-							<div>
-								<label for="color" class="block text-sm font-medium text-gray-700 mb-1">Choisir une couleur</label>
-								<input type="color" id="color" name="color" [value]="event.categoryColor()" (input)="event.categoryColor.set($any($event.target).value)" class="w-full h-10 border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"/>
-							</div>
-						</div>
-					</div>
 
-					<div *ngIf="isCreateNewOrganizer" class="mb-4">
-						<div class="border-b border-gray-300 mb-2">
-							<h6 class="text-sm font-medium text-gray-800">
-								Information sur l'organisateur de l'événement
-							</h6>
-						</div>
-						<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-							<div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-									<input type="text" placeholder="Nom de l'organisateur" [value]="event.organizerName()" (input)="event.organizerName.set($any($event.target).value)" class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+							<div class="space-y-4">
+								<div *ngFor="let ticket of event.tickets()" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+									<div class="flex items-center justify-between mb-3">
+										<span class="text-sm font-medium text-gray-700">Ticket #{{ ticket.id() }}</span>
+										<button 
+											type="button" 
+											(click)="removeTicket(ticket.id())" 
+											class="text-gray-400 hover:text-red-500 transition-colors"
+										>
+											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+											</svg>
+										</button>
+									</div>
+									<div class="space-y-3">
+										<div>
+											<label class="block text-xs font-medium text-gray-600 mb-1">Nom du ticket</label>
+											<input 
+												type="text" 
+												placeholder="Ex: VIP, Standard..." 
+												[value]="ticket.name()" 
+												(input)="updateTicketName(ticket.id(), $any($event.target).value)" 
+												class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+											/>
+										</div>
+										<div class="grid grid-cols-2 gap-3">
+											<div>
+												<label class="block text-xs font-medium text-gray-600 mb-1">Prix (€)</label>
+												<input 
+													type="number" 
+													placeholder="0" 
+													[value]="ticket.price()" 
+													(input)="updateTicketPrice(ticket.id(), $any($event.target).value)" 
+													class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+												/>
+											</div>
+											<div>
+												<label class="block text-xs font-medium text-gray-600 mb-1">Quantité</label>
+												<input 
+													type="number" 
+													placeholder="0" 
+													[value]="ticket.size()" 
+													(input)="updateTicketSize(ticket.id(), $any($event.target).value)" 
+													class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+												/>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Empty State -->
+								<div *ngIf="event.tickets().length === 0" class="text-center py-8">
+									<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+									</svg>
+									<p class="mt-2 text-sm text-gray-600">Aucun ticket ajouté</p>
+									<p class="text-xs text-gray-500 mt-1">Cliquez sur "Ajouter" pour créer un type de ticket</p>
 								</div>
 							</div>
-							<div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-									<input type="email" placeholder="Email de l'organisateur" [value]="event.organizerEmail()" (input)="
-																																																																																																																																												                      event.organizerEmail.set($any($event.target).value)
-																																																																																																																																												                    " class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-								</div>
-							</div>
-						</div>
-						<div class="grid grid-cols-2 gap-4 items-end w-full mb-2">
-							<div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-									<input type="text" placeholder="Numéro de téléphone de l'organisateur" [value]="event.organizerPhone()" (input)="
-																																																																																																																																												                      event.organizerPhone.set($any($event.target).value)
-																																																																																																																																												                    " class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-								</div>
-							</div>
-							<div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Adress</label>
-									<input type="text" placeholder="Adresse de l'organisateur" [value]="event.organizerAddress()" (input)="
-																																																																																																																																												                      event.organizerAddress.set($any($event.target).value)
-																																																																																																																																												                    " class="w-full border border-gray-300 h-8 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-								</div>
-							</div>
-						</div>
-						<div class="mb-2">
-							<label class="block text-sm font-medium text-gray-700 mb-1">Site Web de l'Organisateur</label>
-							<input type="text" placeholder="Site Web de l'organisateur" [value]="event.organizerWebsite()" (input)="event.organizerWebsite.set($any($event.target).value)" class="w-full border border-gray-300 h-8 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="flex justify-end space-x-3 pt-4">
-				<button type="button" (click)="closeModal()" class="bg-gray-200 cursor-pointer hover:bg-gray-300 px-4 py-2 text-sm font-medium" *ngIf="!isSubmitting">
-					Annuler
-				</button>
-				<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium cursor-not-allowed" *ngIf="isSubmitting" disabled>
-					<app-btn-loading></app-btn-loading>
-				</button>
-
-				<button type="submit" class="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium" *ngIf="!isSubmitting">
-					Créer l'événement
-				</button>
-			</div>
-		</form>
+				<!-- Footer Actions -->
+				<div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+					<button 
+						type="button" 
+						(click)="closeModal()" 
+						class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors" 
+						*ngIf="!isSubmitting"
+					>
+						Annuler
+					</button>
+					<button 
+						type="submit" 
+						class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
+						[disabled]="isSubmitting"
+					>
+						<app-btn-loading *ngIf="isSubmitting"></app-btn-loading>
+						<svg *ngIf="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+						</svg>
+						<span>{{ isSubmitting ? 'Création en cours...' : 'Créer l\'événement' }}</span>
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
