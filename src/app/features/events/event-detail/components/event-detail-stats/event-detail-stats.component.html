@@ -1,0 +1,55 @@
+<div class="px-8 py-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Stat Card 1 -->
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-blue-100 rounded-lg">
+          <mat-icon class="text-blue-600 !w-8 !h-8 !text-3xl">confirmation_number</mat-icon>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">{{ totalTickets }}</h3>
+          <p class="text-sm text-gray-600 mt-1">Capacité Totale</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Card 2 -->
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-green-100 rounded-lg">
+          <mat-icon class="text-green-600 !w-8 !h-8 !text-3xl">payments</mat-icon>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">{{ totalRevenue | currency: 'EUR' }}</h3>
+          <p class="text-sm text-gray-600 mt-1">Revenu Potentiel</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Card 3 -->
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-emerald-100 rounded-lg">
+          <mat-icon class="text-emerald-600 !w-8 !h-8 !text-3xl">category</mat-icon>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">{{ ticketTypesCount }}</h3>
+          <p class="text-sm text-gray-600 mt-1">Types de Tickets</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Card 4 -->
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-orange-100 rounded-lg">
+          <mat-icon class="text-orange-600 !w-8 !h-8 !text-3xl">place</mat-icon>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">{{ location?.size || 0 }}</h3>
+          <p class="text-sm text-gray-600 mt-1">Capacité du Lieu</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

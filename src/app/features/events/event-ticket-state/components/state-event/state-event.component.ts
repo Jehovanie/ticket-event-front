@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CardUiStateComponent } from '../card-ui-state/card-ui-state.component';
 import { ChartDoughnutType } from './type';
-import { EventStateType } from '../../event-detail.component';
+import { EventStateType } from '../../event-ticket-state.component';
 
 
 @Component({

@@ -10,7 +10,7 @@ import { LoadingComponent } from '@/app/_shared/components/loading/loading.compo
   selector: 'app-card-ui-state',
   imports: [CommonModule, LoadingComponent, BaseChartDirective],
   templateUrl: './card-ui-state.component.html',
-  styleUrl: './card-ui-state.component.css',
+  styles: ``
 })
 export class CardUiStateComponent implements OnInit {
   @Input() dataState!: ChartDoughnutType;

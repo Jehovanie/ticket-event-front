@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { ListEventComponent } from './components/list-event/list-event.component';
 import { FilterEventComponent } from './components/filter-event/filter-event.component';
-import { CreateEventComponent } from './components/create-event/create-event.component';
 import { CommonModule } from '@angular/common';
 
 import { EventsService } from '@/app/_core/services/events/events.service';

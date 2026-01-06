@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-list-consumer',
   imports: [],
   templateUrl: './list-consumer.component.html',
-  styleUrl: './list-consumer.component.css'
+  styles: ``
 })
 export class ListConsumerComponent {
 
