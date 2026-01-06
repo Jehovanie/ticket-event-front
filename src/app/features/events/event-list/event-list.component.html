@@ -1,37 +1,33 @@
-<div class="w-full h-full flex flex-col">
+<div class="w-full h-full flex flex-col bg-gray-50">
   <!-- Header Section -->
-  <div class="px-8 py-3 shadow-lg">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div class="p-4 rounded-lg">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-3xl font-bold ">Événements</h1>
-          <p class="text-sm mt-1">Gérez tous vos événements en un seul endroit</p>
-        </div>
+  <div class="bg-white border-b border-gray-200 px-6 py-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Événements</h1>
+        <p class="text-sm text-gray-600 mt-1">Gérez et consultez tous vos événements</p>
       </div>
-      <a routerLink="/events/new" class="flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:shadow-xl transition-all duration-200 hover:scale-105">
+      <a routerLink="/events/new" class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        Créer un événement
+        Nouvel événement
       </a>
     </div>
   </div>
 
   <!-- Content Section -->
-  <div class="flex-1 overflow-hidden flex flex-col bg-white shadow pt-2">
-    <div *ngIf="data.isLoading" class="w-full h-full">
+  <div class="flex-1 overflow-hidden flex flex-col">
+    <div *ngIf="data.isLoading" class="w-full h-full flex items-center justify-center">
       <app-loading></app-loading>
     </div>
-    <div *ngIf="!data.isLoading" class="overflow-x-auto  flex flex-col flex-1">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 shadow">
+    <div *ngIf="!data.isLoading" class="flex flex-col flex-1 h-full">
+      <!-- Filters Section -->
+      <div class="bg-white border-b border-gray-200 px-6 py-4">
         <app-filter-event></app-filter-event>
       </div>
-      <div class="flex-1 overflow-y-auto">
+      
+      <!-- Events List -->
+      <div class="flex-1 overflow-y-auto px-6 py-6">
         <app-list-event [events]="data.events.items"></app-list-event>
       </div>
     </div>
