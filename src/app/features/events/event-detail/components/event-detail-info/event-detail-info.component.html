@@ -1,0 +1,63 @@
+<!-- Image Gallery -->
+<div class="bg-white rounded-lg shadow overflow-hidden" *ngIf="event.imageUrl && event.imageUrl.length > 0">
+    <div class="relative w-full h-96">
+      <img [src]="event.imageUrl[currentImageIndex]" [alt]="event.title" class="w-full h-full object-cover">
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-black bg-opacity-70 px-4 py-2 rounded-full" *ngIf="event.imageUrl.length > 1">
+        <button mat-icon-button (click)="previousImage.emit()" class="!text-white">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="text-white text-sm font-medium px-2">{{ currentImageIndex + 1 }} / {{ event.imageUrl.length }}</span>
+        <button mat-icon-button (click)="nextImage.emit()" class="!text-white">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">description</mat-icon>
+      <h2 class="text-xl font-semibold text-gray-800">Description</h2>
+    </div>
+    <p class="text-gray-700 leading-relaxed">{{ event.description || 'Aucune description disponible.' }}</p>
+  </div>
+
+  <!-- Date & Time -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">event</mat-icon>
+      <h2 class="text-xl font-semibold text-gray-800">Date et Heure</h2>
+    </div>
+    <div class="space-y-4">
+      <div class="flex items-start gap-3">
+        <mat-icon class="text-blue-500 mt-1">schedule</mat-icon>
+        <div>
+          <p class="font-semibold text-gray-800">Début</p>
+          <p class="text-gray-600 mt-1">{{ event.startedAt | titleCaseDateFr }}</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <mat-icon class="text-blue-500 mt-1">event_available</mat-icon>
+        <div>
+          <p class="font-semibold text-gray-800">Fin</p>
+          <p class="text-gray-600 mt-1">{{ event.endAt | titleCaseDateFr }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="bg-white rounded-lg shadow p-6" *ngIf="location">
+    <div class="flex items-center gap-3 mb-4">
+      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">place</mat-icon>
+      <h2 class="text-xl font-semibold text-gray-800">Lieu</h2>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ location.name }}</h3>
+      <p class="flex items-center gap-2 text-gray-600">
+        <mat-icon class="!w-5 !h-5">people</mat-icon>
+        Capacité: {{ location.size }} personnes
+      </p>
+    </div>
+  </div>

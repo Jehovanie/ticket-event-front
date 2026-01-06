@@ -1,0 +1,41 @@
+<div class="px-8 py-4 bg-white shadow-md sticky top-0 z-10">
+  <div class="flex items-start justify-between gap-4">
+    <div class="flex items-start gap-3 flex-1">
+      <button mat-icon-button (click)="back.emit()" class="mt-1">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="flex-1">
+        <h1 class="text-3xl font-bold text-gray-900">{{ event.title }}</h1>
+        <div class="flex items-center gap-2 mt-3 flex-wrap">
+          <span *ngIf="isEventUpcoming()" class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 flex items-center gap-1">
+            <mat-icon class="!w-4 !h-4 !text-sm">schedule</mat-icon> À venir
+          </span>
+          <span *ngIf="isEventOngoing()" class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 flex items-center gap-1">
+            <mat-icon class="!w-4 !h-4 !text-sm">play_circle</mat-icon> En cours
+          </span>
+          <span *ngIf="isEventPast()" class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 flex items-center gap-1">
+            <mat-icon class="!w-4 !h-4 !text-sm">check_circle</mat-icon> Terminé
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap justify-end">
+      <button mat-icon-button (click)="refresh.emit()" matTooltip="Actualiser" class="hover:bg-gray-100">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-stroked-button (click)="duplicate.emit()" class="flex items-center gap-1 border-0">
+        <mat-icon class="!w-5 !h-5">content_copy</mat-icon>
+        Dupliquer
+      </button>
+      <button mat-raised-button color="primary" (click)="edit.emit()" class="flex items-center gap-1">
+        <mat-icon class="!w-5 !h-5">edit</mat-icon>
+        Modifier
+      </button>
+      <button mat-raised-button color="warn" (click)="delete.emit()" [disabled]="isDeleting" class="flex items-center gap-1">
+        <mat-icon class="!w-5 !h-5">delete</mat-icon>
+        {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
+      </button>
+    </div>
+  </div>
+</div>

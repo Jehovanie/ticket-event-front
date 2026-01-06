@@ -1,0 +1,94 @@
+<div class="px-8 pb-8">
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">confirmation_number</mat-icon>
+        <h2 class="text-xl font-semibold text-gray-800">Types de Tickets ({{ getTicketTypesCount() }})</h2>
+      </div>
+      <button mat-raised-button color="primary" (click)="viewStats.emit()" class="flex items-center gap-2">
+        <mat-icon>analytics</mat-icon>
+        Voir les statistiques
+      </button>
+    </div>
+
+    <!-- No Ticket Types -->
+    <div *ngIf="ticketTypes.length === 0" class="flex flex-col items-center justify-center py-16 text-gray-500">
+      <mat-icon class="!w-16 !h-16 !text-6xl text-gray-300 mb-4">info</mat-icon>
+      <p class="text-lg">Aucun type de ticket disponible pour cet événement.</p>
+    </div>
+
+    <!-- Ticket Types Grid -->
+    <div *ngIf="ticketTypes.length > 0" class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div *ngFor="let ticketType of ticketTypes" 
+             class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-all duration-200 hover:border-blue-300">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ ticketType.name }}</h3>
+              <span class="inline-block px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded">
+                ID: {{ ticketType.id }}
+              </span>
+            </div>
+            <mat-icon class="text-blue-500">local_activity</mat-icon>
+          </div>
+
+          <div class="space-y-2 mt-4">
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+              <span class="text-sm text-gray-600 flex items-center gap-2">
+                <mat-icon class="!w-4 !h-4 !text-base text-green-500">payments</mat-icon>
+                Prix
+              </span>
+              <span class="text-base font-semibold text-gray-800">{{ ticketType.prix | currency: 'EUR' }}</span>
+            </div>
+
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+              <span class="text-sm text-gray-600 flex items-center gap-2">
+                <mat-icon class="!w-4 !h-4 !text-base text-blue-500">confirmation_number</mat-icon>
+                Quantité max
+              </span>
+              <span class="text-base font-semibold text-gray-800">{{ ticketType.quantite_max }}</span>
+            </div>
+
+            <div class="flex items-center justify-between py-2">
+              <span class="text-sm text-gray-600 flex items-center gap-2">
+                <mat-icon class="!w-4 !h-4 !text-base text-purple-500">calculate</mat-icon>
+                Revenu potentiel
+              </span>
+              <span class="text-base font-semibold text-purple-600">
+                {{ (ticketType.prix * ticketType.quantite_max) | currency: 'EUR' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span *ngIf="ticketType.createdAt">
+              Créé: {{ ticketType.createdAt | titleCaseDateFr }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <mat-icon class="text-blue-600">summarize</mat-icon>
+          Résumé des types de tickets
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white rounded-lg p-4 shadow-sm">
+            <p class="text-sm text-gray-600 mb-1">Nombre de types</p>
+            <p class="text-2xl font-bold text-blue-600">{{ getTicketTypesCount() }}</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 shadow-sm">
+            <p class="text-sm text-gray-600 mb-1">Capacité totale</p>
+            <p class="text-2xl font-bold text-green-600">{{ totalTickets }}</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 shadow-sm">
+            <p class="text-sm text-gray-600 mb-1">Revenu potentiel total</p>
+            <p class="text-2xl font-bold text-purple-600">{{ totalRevenue | currency: 'EUR' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
