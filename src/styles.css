@@ -1,2 +1,93 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+/*
+ * Palette de l'admin TicketUp.
+ *
+ * `primary` est l'indigo de la barre latérale (#121063) : c'est la couleur
+ * d'identité, déclinée ici en une échelle complète pour que les fonds clairs,
+ * les états de survol et les anneaux de focus restent dans la même famille au
+ * lieu des bleus Tailwind génériques utilisés jusqu'ici.
+ *
+ * Les couleurs sémantiques (success / warning / danger) ne servent qu'à porter
+ * du sens : statut d'un événement, action destructive, alerte.
+ */
+@theme {
+  --color-primary-50: #f2f3fb;
+  --color-primary-100: #e3e5f6;
+  --color-primary-200: #c6caee;
+  --color-primary-300: #a0a6e0;
+  --color-primary-400: #7a80cd;
+  --color-primary-500: #575db4;
+  --color-primary-600: #3d4199;
+  --color-primary-700: #2a2c80;
+  --color-primary-800: #1c1c70;
+  --color-primary-900: #121063;
+  --color-primary: #121063;
+
+  --color-secondary-50: #eefafb;
+  --color-secondary-100: #d3f2f4;
+  --color-secondary-500: #3ab7bf;
+  --color-secondary-600: #2b959c;
+  --color-secondary-700: #23767c;
+  --color-secondary: #3ab7bf;
+
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger: #dc2626;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/*
+ * Angular Material fige `mat-icon` à 24 px. Dès qu'on redimensionne la boîte
+ * (`!w-4 !h-4 !text-base`), le glyphe reste calé en haut à gauche et se
+ * désaligne du texte voisin. On le recentre dans sa boîte, quelle que soit sa
+ * taille, ce qui rend fiables toutes les lignes « icône + texte ».
+ */
+mat-icon.mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
+}
+
+/*
+ * Notifications : le conteneur Material impose une surface sombre, un padding
+ * et une ombre. On l'efface pour que `NotificationComponent` dessine seul sa
+ * carte. Ces règles sont globales à dessein — l'overlay est rendu hors des
+ * composants, dans `.cdk-overlay-container`.
+ */
+.mat-mdc-snack-bar-container.app-notification .mdc-snackbar__surface {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  border-radius: 0;
+}
+
+.mat-mdc-snack-bar-container.app-notification .mat-mdc-snack-bar-label {
+  padding: 0;
+}
+
+.mat-mdc-snack-bar-container.app-notification {
+  max-width: 28rem;
+  margin: 1rem;
+}

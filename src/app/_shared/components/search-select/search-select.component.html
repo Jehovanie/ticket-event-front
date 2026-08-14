@@ -1,0 +1,117 @@
+<!-- Déclencheur : montre la sélection courante, ou l'invite -->
+<button
+  type="button"
+  (click)="toggle()"
+  [disabled]="disabled()"
+  role="combobox"
+  [attr.aria-expanded]="isOpen()"
+  aria-haspopup="listbox"
+  class="w-full h-10 pl-3 rounded-lg border bg-white text-sm flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 disabled:cursor-not-allowed"
+  [ngClass]="[
+    selectedOption() ? 'pr-16' : 'pr-9',
+    invalid()
+      ? 'border-danger-300 focus:ring-danger-500'
+      : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300'
+  ]"
+>
+  <span
+    *ngIf="selectedOption()?.color as color"
+    class="w-2 h-2 rounded-full flex-shrink-0"
+    [style.background-color]="color"
+  ></span>
+
+  <span class="flex-1 min-w-0 text-left truncate" [ngClass]="selectedOption() ? 'text-gray-900' : 'text-gray-400'">
+    {{ selectedOption()?.label || placeholder() }}
+  </span>
+
+  <span
+    *ngIf="selectedOption()?.hint as hint"
+    class="hidden sm:inline text-xs text-gray-400 flex-shrink-0 truncate max-w-[40%]"
+  >
+    {{ hint }}
+  </span>
+</button>
+
+<!-- Effacer : hors du bouton déclencheur, deux boutons imbriqués seraient invalides -->
+<button
+  *ngIf="selectedOption()"
+  type="button"
+  (click)="clear($event)"
+  aria-label="Effacer la sélection"
+  class="absolute right-8 top-5 -translate-y-1/2 flex items-center justify-center h-6 w-6 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-danger-500"
+>
+  <mat-icon class="!w-4 !h-4 !text-base">close</mat-icon>
+</button>
+
+<mat-icon
+  class="!w-5 !h-5 !text-xl text-gray-400 absolute right-2 top-5 -translate-y-1/2 pointer-events-none transition-transform"
+  [class.rotate-180]="isOpen()"
+>expand_more</mat-icon>
+
+<!-- Panneau -->
+<div
+  *ngIf="isOpen()"
+  class="absolute z-30 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
+>
+  <div class="p-2 border-b border-gray-100">
+    <div class="relative">
+      <mat-icon class="!w-4 !h-4 !text-base text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</mat-icon>
+      <input
+        #searchInput
+        type="text"
+        [placeholder]="searchPlaceholder()"
+        [value]="query()"
+        (input)="onSearch($any($event.target).value)"
+        (keydown)="onSearchKeydown($event)"
+        class="w-full h-9 pl-9 pr-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+      />
+    </div>
+  </div>
+
+  <ul role="listbox" class="max-h-64 overflow-y-auto py-1">
+    <li *ngFor="let option of filteredOptions(); let i = index">
+      <button
+        type="button"
+        role="option"
+        [attr.aria-selected]="selectedOption()?.value === option.value"
+        (click)="select(option)"
+        (mouseenter)="activeIndex.set(i)"
+        class="w-full px-3 py-2 flex items-center gap-2 text-sm text-left transition-colors"
+        [ngClass]="i === activeIndex() ? 'bg-primary-50' : 'hover:bg-gray-50'"
+      >
+        <span
+          *ngIf="option.color"
+          class="w-2 h-2 rounded-full flex-shrink-0"
+          [style.background-color]="option.color"
+        ></span>
+
+        <span
+          class="flex-1 min-w-0 truncate"
+          [ngClass]="selectedOption()?.value === option.value ? 'font-medium text-primary-700' : 'text-gray-700'"
+        >
+          {{ option.label }}
+        </span>
+
+        <span *ngIf="option.hint" class="text-xs text-gray-400 flex-shrink-0">{{ option.hint }}</span>
+
+        <mat-icon
+          *ngIf="selectedOption()?.value === option.value"
+          class="!w-4 !h-4 !text-base text-primary-600 flex-shrink-0"
+        >check</mat-icon>
+      </button>
+    </li>
+
+    <li *ngIf="filteredOptions().length === 0" class="px-3 py-6 text-center">
+      <p class="text-sm text-gray-500">{{ emptyLabel() }}</p>
+      <p class="mt-0.5 text-xs text-gray-400">Essayez un autre terme de recherche.</p>
+    </li>
+  </ul>
+
+  <footer
+    *ngIf="filteredOptions().length > 0"
+    class="px-3 py-2 border-t border-gray-100 bg-gray-50 text-xs text-gray-400"
+  >
+    {{ filteredOptions().length }} résultat{{ filteredOptions().length > 1 ? 's' : '' }}
+    <span *ngIf="filteredOptions().length !== options().length"> sur {{ options().length }}</span>
+  </footer>
+</div>

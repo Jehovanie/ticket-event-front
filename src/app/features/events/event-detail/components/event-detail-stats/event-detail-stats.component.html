@@ -1,0 +1,82 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+  <!-- Capacité billetterie -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="flex items-center gap-3">
+      <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary-700 flex-shrink-0">
+        <mat-icon class="!w-5 !h-5 !text-xl">confirmation_number</mat-icon>
+      </span>
+      <p class="text-sm font-medium text-gray-500">Capacité billetterie</p>
+    </div>
+    <p class="mt-3 text-2xl font-bold text-gray-900">{{ totalTickets | number:'1.0-0' }}</p>
+    <p class="mt-0.5 text-xs text-gray-400">places mises en vente</p>
+  </div>
+
+  <!-- Revenu potentiel -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="flex items-center gap-3">
+      <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-success-50 text-success-700 flex-shrink-0">
+        <mat-icon class="!w-5 !h-5 !text-xl">payments</mat-icon>
+      </span>
+      <p class="text-sm font-medium text-gray-500">Revenu potentiel</p>
+    </div>
+    <p class="mt-3 text-2xl font-bold text-gray-900 truncate" [title]="totalRevenue | ariary:'0 Ar'">
+      {{ totalRevenue | ariary:'0 Ar' }}
+    </p>
+    <p class="mt-0.5 text-xs text-gray-400">si toutes les places sont vendues</p>
+  </div>
+
+  <!-- Types de billets -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="flex items-center gap-3">
+      <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary-50 text-secondary-700 flex-shrink-0">
+        <mat-icon class="!w-5 !h-5 !text-xl">sell</mat-icon>
+      </span>
+      <p class="text-sm font-medium text-gray-500">Types de billets</p>
+    </div>
+    <p class="mt-3 text-2xl font-bold text-gray-900">{{ ticketTypesCount }}</p>
+    <p class="mt-0.5 text-xs text-gray-400">tarifs proposés</p>
+  </div>
+
+  <!-- Occupation du lieu -->
+  <div
+    class="bg-white rounded-xl border p-5"
+    [ngClass]="isOverbooked ? 'border-danger-100' : 'border-gray-200'"
+  >
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0"
+        [ngClass]="isOverbooked ? 'bg-danger-50 text-danger-600' : 'bg-primary-50 text-primary-700'"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl">place</mat-icon>
+      </span>
+      <p class="text-sm font-medium text-gray-500">Occupation du lieu</p>
+    </div>
+
+    <ng-container *ngIf="occupancyRatio !== null; else noVenue">
+      <p class="mt-3 flex items-baseline gap-2">
+        <span class="text-2xl font-bold" [ngClass]="isOverbooked ? 'text-danger-600' : 'text-gray-900'">
+          {{ occupancyPercent }} %
+        </span>
+        <span class="text-xs text-gray-400">
+          {{ totalTickets | number:'1.0-0' }} / {{ location?.size | number:'1.0-0' }} places
+        </span>
+      </p>
+      <div class="mt-2 h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+        <div
+          class="h-full rounded-full transition-all duration-500"
+          [ngClass]="isOverbooked ? 'bg-danger-500' : 'bg-primary-500'"
+          [style.width.%]="occupancyBarWidth"
+        ></div>
+      </div>
+      <p *ngIf="isOverbooked" class="mt-2 flex items-center gap-1 text-xs font-medium text-danger-600">
+        <mat-icon class="!w-4 !h-4 !text-base">warning</mat-icon>
+        Les quotas dépassent la capacité du lieu
+      </p>
+    </ng-container>
+
+    <ng-template #noVenue>
+      <p class="mt-3 text-2xl font-bold text-gray-300">—</p>
+      <p class="mt-0.5 text-xs text-gray-400">aucun lieu renseigné</p>
+    </ng-template>
+  </div>
+</div>

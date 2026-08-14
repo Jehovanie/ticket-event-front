@@ -1,0 +1,7 @@
+/* À l'impression, on garde le contenu et on retire les commandes. */
+@media print {
+  .sticky,
+  button {
+    display: none !important;
+  }
+}

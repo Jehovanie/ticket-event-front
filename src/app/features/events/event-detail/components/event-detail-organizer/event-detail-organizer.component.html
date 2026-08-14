@@ -1,0 +1,61 @@
+<footer *ngIf="organizer" class="mt-6 bg-gray-100 border-t border-gray-200">
+  <div class="max-w-[1600px] mx-auto px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <!-- Identité -->
+      <div class="flex items-center gap-4 min-w-0">
+        <span
+          class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white ring-1 ring-gray-200 text-primary-700 text-lg font-bold flex-shrink-0"
+        >
+          {{ organizerInitials }}
+        </span>
+        <div class="min-w-0">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+            Organisé par
+          </p>
+          <p class="mt-0.5 text-xl font-bold text-gray-900 truncate">{{ organizer.name }}</p>
+        </div>
+      </div>
+
+      <!-- Moyens de contact : des actions, pas une liste à lire -->
+      <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+        <a
+          *ngIf="organizer.email"
+          [href]="'mailto:' + organizer.email"
+          class="group inline-flex items-center gap-2 h-10 pl-3 pr-4 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-primary-200 hover:text-primary-700 hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 max-w-full"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base text-gray-400 group-hover:text-primary-600 transition-colors">mail</mat-icon>
+          <span class="truncate">{{ organizer.email }}</span>
+        </a>
+
+        <a
+          *ngIf="organizer.phone"
+          [href]="'tel:' + organizer.phone"
+          class="group inline-flex items-center gap-2 h-10 pl-3 pr-4 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-primary-200 hover:text-primary-700 hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 max-w-full"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base text-gray-400 group-hover:text-primary-600 transition-colors">call</mat-icon>
+          <span class="truncate">{{ organizer.phone }}</span>
+        </a>
+
+        <span
+          *ngIf="organizer.address"
+          class="inline-flex items-center gap-2 h-10 pl-3 pr-4 rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 max-w-full"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base text-gray-400">location_on</mat-icon>
+          <span class="truncate">{{ organizer.address }}</span>
+        </span>
+
+        <a
+          *ngIf="organizer.website"
+          [href]="organizer.website"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-2 h-10 pl-3 pr-4 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-primary-200 hover:text-primary-700 hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 max-w-full"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base text-gray-400 group-hover:text-primary-600 transition-colors">language</mat-icon>
+          <span class="truncate">{{ websiteLabel }}</span>
+          <mat-icon class="!w-3.5 !h-3.5 !text-sm text-gray-300 flex-shrink-0">open_in_new</mat-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

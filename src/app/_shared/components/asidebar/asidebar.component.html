@@ -1,0 +1,97 @@
+<aside class="h-full w-full bg-primary text-white flex flex-col overflow-hidden">
+	<!-- Marque + repli -->
+	<div class="flex items-center h-16 px-3 flex-shrink-0 gap-3" [class.justify-center]="isCollapsed">
+		<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary-500 text-primary-900 flex-shrink-0">
+			<mat-icon class="!w-5 !h-5 !text-xl">local_activity</mat-icon>
+		</span>
+		<div *ngIf="!isCollapsed" class="min-w-0 flex-1">
+			<p class="text-sm font-bold leading-tight truncate">TicketUp</p>
+			<p class="text-[11px] leading-tight text-primary-300">Administration</p>
+		</div>
+		<button
+			*ngIf="!isCollapsed"
+			(click)="toggleSidebar()"
+			matTooltip="Replier le menu"
+			matTooltipPosition="right"
+			aria-label="Replier le menu"
+			class="flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+		>
+			<mat-icon class="!w-5 !h-5 !text-xl">chevron_left</mat-icon>
+		</button>
+	</div>
+
+	<button
+		*ngIf="isCollapsed"
+		(click)="toggleSidebar()"
+		matTooltip="Déplier le menu"
+		matTooltipPosition="right"
+		aria-label="Déplier le menu"
+		class="mx-auto mb-2 flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+	>
+		<mat-icon class="!w-5 !h-5 !text-xl">chevron_right</mat-icon>
+	</button>
+
+	<!-- Navigation -->
+	<nav class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 pb-4 nav-scroll">
+		<div *ngFor="let section of navSections; let first = first" [class.mt-5]="!first">
+			<p
+				*ngIf="!isCollapsed"
+				class="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary-300"
+			>
+				{{ section.title }}
+			</p>
+			<div *ngIf="isCollapsed && !first" class="mx-2 mb-3 border-t border-white/10"></div>
+
+			<div class="space-y-1">
+				<app-navbar-link
+					*ngFor="let link of section.links"
+					[link]="link"
+					[isCollapsed]="isCollapsed"
+				></app-navbar-link>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Compte -->
+	<div class="border-t border-white/10 p-3 flex-shrink-0">
+		<div class="flex items-center gap-3" [class.justify-center]="isCollapsed">
+			<span
+				class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white flex-shrink-0 ring-1 ring-white/15"
+				[matTooltip]="userName + ' · ' + userEmail"
+				[matTooltipDisabled]="!isCollapsed"
+				matTooltipPosition="right"
+			>
+				{{ userInitials }}
+			</span>
+
+			<div *ngIf="!isCollapsed" class="min-w-0 flex-1">
+				<p class="text-sm font-medium truncate">{{ userName }}</p>
+				<p class="text-xs text-primary-300 truncate">{{ userEmail }}</p>
+			</div>
+
+			<button
+				type="button"
+				*ngIf="!isCollapsed"
+				(click)="logout()"
+				matTooltip="Se déconnecter"
+				matTooltipPosition="right"
+				aria-label="Se déconnecter"
+				class="flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+			>
+				<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
+			</button>
+		</div>
+
+		<button
+			type="button"
+			*ngIf="isCollapsed"
+			(click)="logout()"
+			matTooltip="Se déconnecter"
+			matTooltipPosition="right"
+			aria-label="Se déconnecter"
+			class="mx-auto mt-2 flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+		>
+			<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
+		</button>
+	</div>
+</aside>

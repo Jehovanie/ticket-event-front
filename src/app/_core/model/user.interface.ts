@@ -1,10 +1,12 @@
+/** Utilisateur tel que renvoyé par `/api/auth/register` et `/api/user/me`. */
 export interface IUser {
-  _id?: string;
+  id?: number | string;
   email?: string;
-  picture?: string;
-  username?: string;
   firstname?: string;
   lastname?: string;
-  createdAd?: Date;
-  roles?: string;
+  phone?: string | null;
+  language?: string | null;
+  roles?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }

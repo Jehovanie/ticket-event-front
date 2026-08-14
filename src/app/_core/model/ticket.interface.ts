@@ -1,10 +1,11 @@
-import { IStatus, ITypeTicket } from '../../_utils/type';
+import { IStatus, ITypeTicket } from '../../_shared/utils/type';
 
 export interface ITicket {
-  _id?: string;
-  eventId?: string;
-  code?: string;
+  id: string;
+  name: string;
   type: ITypeTicket;
   price?: number;
+  eventId: string;
+  code: string;
   status?: IStatus;
 }

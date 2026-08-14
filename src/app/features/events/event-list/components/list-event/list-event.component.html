@@ -1,0 +1,296 @@
+<div class="space-y-5">
+  <!-- Vue grille -->
+  <div
+    *ngIf="viewMode === 'grid' && displayedEvents.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5"
+  >
+    <a
+      *ngFor="let event of displayedEvents"
+      [routerLink]="['/events', event.id]"
+      class="group block bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+    >
+      <!-- Visuel : la teinte reprend le statut, lisible avant même de lire la pastille -->
+      <div
+        class="relative h-36 overflow-hidden bg-gradient-to-br"
+        [ngClass]="{
+          'from-primary-700 to-primary-400': getStatusKey(event) === 'upcoming',
+          'from-success-600 to-secondary-500': getStatusKey(event) === 'ongoing',
+          'from-gray-500 to-gray-400': getStatusKey(event) === 'past'
+        }"
+      >
+        <img
+          *ngIf="event.imageUrl && event.imageUrl.length > 0"
+          [src]="event.imageUrl[0]"
+          [alt]="event.title"
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <svg
+          *ngIf="!event.imageUrl || event.imageUrl.length === 0"
+          class="absolute -bottom-4 -right-3 h-28 w-28 text-white/15"
+          fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+
+        <span
+          class="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/95 shadow-sm"
+          [ngClass]="{
+            'text-primary-700': getStatusKey(event) === 'upcoming',
+            'text-success-700': getStatusKey(event) === 'ongoing',
+            'text-gray-600': getStatusKey(event) === 'past'
+          }"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full"
+            [ngClass]="{
+              'bg-primary-600': getStatusKey(event) === 'upcoming',
+              'bg-success-500 animate-pulse': getStatusKey(event) === 'ongoing',
+              'bg-gray-400': getStatusKey(event) === 'past'
+            }"
+          ></span>
+          {{ getEventStatus(event) }}
+        </span>
+
+        <span
+          *ngIf="getCategoryName(event) as categoryName"
+          class="absolute top-3 right-3 max-w-[45%] truncate px-2.5 py-1 rounded-full text-xs font-medium bg-black/25 text-white backdrop-blur-sm"
+        >
+          {{ categoryName }}
+        </span>
+      </div>
+
+      <!-- Contenu -->
+      <div class="p-4">
+        <p class="flex items-center gap-1.5 text-xs font-medium text-primary-700">
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          {{ event.startedAt | titleCaseDateFr }}
+        </p>
+
+        <h3 class="mt-2 text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition-colors">
+          {{ event.title }}
+        </h3>
+
+        <p class="mt-2 flex items-center gap-1.5 text-sm text-gray-500">
+          <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span class="truncate">{{ event.location ? event.location.name : 'Lieu non spécifié' }}</span>
+        </p>
+
+        <div class="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-xs text-gray-400">{{ getPriceCaption(event) }}</p>
+            <p
+              class="text-sm truncate"
+              [ngClass]="hasPrice(event) ? 'font-semibold text-gray-900' : 'text-gray-400'"
+            >
+              {{ getPriceLabel(event) }}
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 text-xs text-gray-500 flex-shrink-0">
+            <span class="inline-flex items-center gap-1" [title]="'Capacité totale'">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              {{ getCapacity(event) | number:'1.0-0' }}
+            </span>
+            <span class="inline-flex items-center gap-1" [title]="'Types de billets'">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+              </svg>
+              {{ event.ticket_type?.length || 0 }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Vue liste -->
+  <div *ngIf="viewMode === 'list' && displayedEvents.length > 0" class="space-y-3">
+    <a
+      *ngFor="let event of displayedEvents"
+      [routerLink]="['/events', event.id]"
+      class="group flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-3 transition-all duration-200 hover:shadow-md hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+    >
+      <div
+        class="relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br"
+        [ngClass]="{
+          'from-primary-700 to-primary-400': getStatusKey(event) === 'upcoming',
+          'from-success-600 to-secondary-500': getStatusKey(event) === 'ongoing',
+          'from-gray-500 to-gray-400': getStatusKey(event) === 'past'
+        }"
+      >
+        <img
+          *ngIf="event.imageUrl && event.imageUrl.length > 0"
+          [src]="event.imageUrl[0]"
+          [alt]="event.title"
+          class="w-full h-full object-cover"
+        />
+        <svg
+          *ngIf="!event.imageUrl || event.imageUrl.length === 0"
+          class="absolute inset-0 m-auto h-8 w-8 text-white/50"
+          fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span
+            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ring-1"
+            [ngClass]="{
+              'bg-primary-50 text-primary-700 ring-primary-100': getStatusKey(event) === 'upcoming',
+              'bg-success-50 text-success-700 ring-success-100': getStatusKey(event) === 'ongoing',
+              'bg-gray-100 text-gray-600 ring-gray-200': getStatusKey(event) === 'past'
+            }"
+          >
+            <span
+              class="w-1.5 h-1.5 rounded-full"
+              [ngClass]="{
+                'bg-primary-600': getStatusKey(event) === 'upcoming',
+                'bg-success-500 animate-pulse': getStatusKey(event) === 'ongoing',
+                'bg-gray-400': getStatusKey(event) === 'past'
+              }"
+            ></span>
+            {{ getEventStatus(event) }}
+          </span>
+          <span
+            *ngIf="getCategoryName(event) as categoryName"
+            class="px-2 py-0.5 rounded-full text-xs font-medium bg-secondary-50 text-secondary-700"
+          >
+            {{ categoryName }}
+          </span>
+        </div>
+
+        <h3 class="mt-1.5 text-base font-semibold text-gray-900 truncate group-hover:text-primary-700 transition-colors">
+          {{ event.title }}
+        </h3>
+
+        <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            {{ event.startedAt | titleCaseDateFr }}
+          </span>
+          <span class="inline-flex items-center gap-1.5 min-w-0">
+            <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="truncate">{{ event.location ? event.location.name : 'Lieu non spécifié' }}</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            {{ getCapacity(event) | number:'1.0-0' }} places
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 flex-shrink-0 pr-1">
+        <div class="text-right hidden sm:block">
+          <p class="text-xs text-gray-400">{{ getPriceCaption(event) }}</p>
+          <p
+            class="text-sm"
+            [ngClass]="hasPrice(event) ? 'font-semibold text-gray-900' : 'text-gray-400'"
+          >
+            {{ getPriceLabel(event) }}
+          </p>
+        </div>
+        <svg class="h-5 w-5 text-gray-300 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </div>
+    </a>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="displayedEvents.length === 0" class="bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center">
+    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+      <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+    </span>
+    <h3 class="mt-4 text-lg font-semibold text-gray-900">Aucun événement</h3>
+    <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier événement.</p>
+    <a
+      routerLink="/events/new"
+      class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Créer un événement
+    </a>
+  </div>
+
+  <!-- Pagination (serveur) -->
+  <div *ngIf="itemsTotal > 0" class="bg-white rounded-xl border border-gray-200 px-4 py-3">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-500">
+        <span class="font-medium text-gray-900">{{ getStartIndex() }}</span>–<span class="font-medium text-gray-900">{{ getEndIndex() }}</span>
+        sur <span class="font-medium text-gray-900">{{ itemsTotal }}</span> événements
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="previousPage()"
+          [disabled]="currentPage <= 1"
+          title="Page précédente"
+          class="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-1">
+          <button
+            *ngFor="let page of getPageNumbers()"
+            type="button"
+            (click)="goToPage(page)"
+            class="min-w-9 h-9 px-3 text-sm font-medium rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            [ngClass]="page === currentPage
+              ? 'bg-primary text-white shadow-sm'
+              : 'text-gray-600 hover:bg-primary-50 hover:text-primary-700'"
+          >
+            {{ page }}
+          </button>
+        </div>
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage >= getTotalPages()"
+          title="Page suivante"
+          class="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+        <select
+          [ngModel]="pageSize"
+          (ngModelChange)="onPageSizeChange($event)"
+          title="Événements par page"
+          class="ml-2 h-9 pl-3 pr-8 border border-gray-200 rounded-lg text-sm text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+          <option [ngValue]="6">6 / page</option>
+          <option [ngValue]="12">12 / page</option>
+          <option [ngValue]="24">24 / page</option>
+          <option [ngValue]="48">48 / page</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

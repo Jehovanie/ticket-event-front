@@ -1,0 +1,127 @@
+<div class="w-full h-full flex flex-col bg-gray-50">
+  <!-- En-tête de page : identité, volume, action principale -->
+  <header class="bg-white border-b border-gray-200 px-6 py-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <span class="hidden sm:flex h-12 w-12 rounded-xl bg-primary-50 text-primary-700 items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </span>
+        <div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Événements</h1>
+            <span
+              *ngIf="!data.isLoading && !data.error"
+              class="px-2.5 py-0.5 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold ring-1 ring-primary-100"
+            >
+              {{ pagination.itemsTotal }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Gérez et consultez tous vos événements</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="loadEvents()"
+          [disabled]="data.isLoading"
+          title="Actualiser la liste"
+          class="inline-flex items-center justify-center h-10 w-10 rounded-lg border border-gray-200 text-gray-500 bg-white hover:bg-gray-50 hover:text-primary-700 disabled:opacity-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <svg class="w-5 h-5" [class.animate-spin]="data.isLoading" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+
+        <a
+          routerLink="/events/new"
+          class="inline-flex items-center justify-center gap-2 bg-primary text-white px-5 h-10 rounded-lg font-medium text-sm hover:bg-primary-800 active:bg-primary-900 transition-colors shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Nouvel événement
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Section -->
+  <div class="flex-1 overflow-hidden flex flex-col">
+    <div *ngIf="data.isLoading" class="w-full h-full flex items-center justify-center">
+      <app-loading></app-loading>
+    </div>
+
+    <div *ngIf="!data.isLoading && data.error" class="w-full h-full flex items-center justify-center px-6">
+      <div class="max-w-sm w-full text-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger-50 text-danger-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+          </svg>
+        </span>
+        <h2 class="mt-4 text-base font-semibold text-gray-900">Chargement impossible</h2>
+        <p class="mt-1 text-sm text-gray-500">{{ data.error }}</p>
+        <button
+          (click)="loadEvents()"
+          class="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Réessayer
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!data.isLoading && !data.error" class="flex flex-col flex-1 h-full min-h-0">
+      <!-- Barre d'outils : recherche / filtres + bascule d'affichage -->
+      <div class="bg-white border-b border-gray-200 px-6 py-3">
+        <div class="flex flex-col xl:flex-row xl:items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <app-filter-event></app-filter-event>
+          </div>
+
+          <div class="inline-flex self-start xl:self-auto rounded-lg border border-gray-200 bg-gray-50 p-1">
+            <button
+              type="button"
+              (click)="setViewMode('grid')"
+              title="Vue grille"
+              class="inline-flex items-center justify-center h-8 w-8 rounded-md transition-colors"
+              [ngClass]="viewMode === 'grid' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+            >
+              <svg class="h-4.5 w-4.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 12a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zM11 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zM11 12a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              (click)="setViewMode('list')"
+              title="Vue liste"
+              class="inline-flex items-center justify-center h-8 w-8 rounded-md transition-colors"
+              [ngClass]="viewMode === 'list' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+            >
+              <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events List -->
+      <div class="flex-1 overflow-y-auto px-6 py-6">
+        <app-list-event
+          [events]="data.events"
+          [viewMode]="viewMode"
+          [itemsTotal]="pagination.itemsTotal"
+          [currentPage]="pagination.page"
+          [pageSize]="pagination.pageSize"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        ></app-list-event>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
-export interface IPaymentTicker {
-    _id?: string;
+export interface IPaymentTicket {
+    id?: string;
     ticketId?: string;
     userId?: string;
     amount?: number;

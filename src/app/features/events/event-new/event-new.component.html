@@ -1,0 +1,601 @@
+<div class="w-full h-full flex flex-col bg-gray-50">
+  <!-- En-tête : l'action principale reste visible en permanence -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="px-6 lg:px-8 pt-4">
+      <a
+        routerLink="/events"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-primary-700 transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      >
+        <mat-icon class="!w-4 !h-4 !text-base">arrow_back</mat-icon>
+        Événements
+      </a>
+    </div>
+
+    <div class="px-6 lg:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start gap-4 min-w-0">
+        <span class="hidden sm:flex h-12 w-12 rounded-xl bg-primary-50 text-primary-700 items-center justify-center flex-shrink-0">
+          <mat-icon>add</mat-icon>
+        </span>
+        <div class="min-w-0">
+          <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Nouvel événement</h1>
+          <p class="text-sm text-gray-500 mt-1">
+            <span *ngIf="remainingSteps() > 0">
+              {{ remainingSteps() }} élément{{ remainingSteps() > 1 ? 's' : '' }} à compléter avant publication
+            </span>
+            <span *ngIf="remainingSteps() === 0" class="text-success-700 font-medium">
+              Toutes les informations requises sont renseignées
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <a
+          routerLink="/events"
+          class="inline-flex items-center justify-center h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          Annuler
+        </a>
+        <button
+          type="submit"
+          form="eventForm"
+          [disabled]="isSubmitting()"
+          class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <app-btn-loading *ngIf="isSubmitting()"></app-btn-loading>
+          <ng-container *ngIf="!isSubmitting()">
+            <mat-icon class="!w-5 !h-5 !text-xl">check</mat-icon>
+            Créer l'événement
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu -->
+  <div class="flex-1 overflow-y-auto">
+    <form
+      id="eventForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="max-w-[1600px] mx-auto px-6 lg:px-8 py-6 grid grid-cols-1 xl:grid-cols-3 gap-5 items-start"
+    >
+      <!-- Colonne de saisie -->
+      <div class="xl:col-span-2 space-y-5">
+        <!-- 1. Informations générales -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center gap-3">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">1</span>
+            <div>
+              <h2 class="font-semibold text-gray-900">Informations générales</h2>
+              <p class="text-xs text-gray-500">Ce que le public verra en premier</p>
+            </div>
+          </div>
+
+          <div class="mt-5 space-y-4">
+            <div>
+              <label for="title" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Nom de l'événement <span class="text-danger-500">*</span>
+              </label>
+              <input
+                id="title"
+                type="text"
+                placeholder="Ex : Festival de Musique Antananarivo 2027"
+                [value]="event.title()"
+                (input)="event.title.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+                [ngClass]="submitted() && !isValidEvent.title()
+                  ? 'border-danger-300 focus:ring-danger-500'
+                  : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+              />
+              <p *ngIf="submitted() && !isValidEvent.title()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+                Le nom doit contenir au moins 3 caractères.
+              </p>
+            </div>
+
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Description <span class="text-danger-500">*</span>
+              </label>
+              <textarea
+                id="description"
+                rows="4"
+                placeholder="Décrivez le déroulé, le programme, les artistes..."
+                [value]="event.description()"
+                (input)="event.description.set($any($event.target).value)"
+                class="w-full px-3 py-2 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors resize-y"
+                [ngClass]="submitted() && !isValidEvent.description()
+                  ? 'border-danger-300 focus:ring-danger-500'
+                  : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+              ></textarea>
+              <p *ngIf="submitted() && !isValidEvent.description()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+                La description doit contenir au moins 3 caractères.
+              </p>
+            </div>
+
+            <div>
+              <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Visuel de l'événement
+              </label>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <input
+                  id="imageUrl"
+                  type="url"
+                  placeholder="https://…/affiche.jpg"
+                  [value]="event.imageUrl()[0] || ''"
+                  (input)="setImageUrl($any($event.target).value)"
+                  class="flex-1 h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+                <div class="h-20 w-32 rounded-lg border border-dashed border-gray-300 bg-gray-50 overflow-hidden flex items-center justify-center flex-shrink-0">
+                  <img
+                    *ngIf="event.imageUrl().length > 0"
+                    [src]="event.imageUrl()[0]"
+                    alt="Aperçu du visuel"
+                    class="w-full h-full object-cover"
+                  />
+                  <mat-icon *ngIf="event.imageUrl().length === 0" class="text-gray-300">image</mat-icon>
+                </div>
+              </div>
+              <p class="mt-1.5 flex items-start gap-1 text-xs text-warning-700">
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm flex-shrink-0 mt-0.5">info</mat-icon>
+                L'API n'enregistre pas encore ce champ à la création : le visuel devra être ajouté plus tard.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Dates -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center gap-3">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">2</span>
+            <div>
+              <h2 class="font-semibold text-gray-900">Dates et horaires</h2>
+              <p class="text-xs text-gray-500">Début et fin, à l'heure près</p>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="startedAt" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Début <span class="text-danger-500">*</span>
+              </label>
+              <input
+                id="startedAt"
+                type="datetime-local"
+                [value]="event.startedAt()"
+                (input)="event.startedAt.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 transition-colors"
+                [ngClass]="submitted() && !isValidEvent.startedAt()
+                  ? 'border-danger-300 focus:ring-danger-500'
+                  : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+              />
+              <p *ngIf="submitted() && !isValidEvent.startedAt()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+                Renseignez la date de début.
+              </p>
+            </div>
+
+            <div>
+              <label for="endAt" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Fin <span class="text-danger-500">*</span>
+              </label>
+              <input
+                id="endAt"
+                type="datetime-local"
+                [min]="event.startedAt()"
+                [value]="event.endAt()"
+                (input)="event.endAt.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 transition-colors"
+                [ngClass]="submitted() && !isValidEvent.endAt()
+                  ? 'border-danger-300 focus:ring-danger-500'
+                  : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+              />
+              <p *ngIf="submitted() && !isValidEvent.endAt()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+                La fin doit être postérieure au début.
+              </p>
+            </div>
+          </div>
+
+          <p *ngIf="durationLabel()" class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+            <mat-icon class="!w-3.5 !h-3.5 !text-sm">schedule</mat-icon>
+            Durée : {{ durationLabel() }}
+          </p>
+        </section>
+
+        <!-- 3. Lieu -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-3">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">3</span>
+              <div>
+                <h2 class="font-semibold text-gray-900">Lieu</h2>
+                <p class="text-xs text-gray-500">Salle existante ou nouvelle adresse</p>
+              </div>
+            </div>
+
+            <div class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1 text-xs font-medium">
+              <button
+                type="button"
+                (click)="isCreateNewLocation && toggleCreateLocation()"
+                class="px-3 h-8 rounded-md transition-colors"
+                [ngClass]="!isCreateNewLocation ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+              >
+                Lieu existant
+              </button>
+              <button
+                type="button"
+                (click)="!isCreateNewLocation && toggleCreateLocation()"
+                class="px-3 h-8 rounded-md transition-colors"
+                [ngClass]="isCreateNewLocation ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+              >
+                Nouveau lieu
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <!-- Lieu existant -->
+            <div *ngIf="!isCreateNewLocation">
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                Choisir un lieu <span class="text-danger-500">*</span>
+              </label>
+              <app-search-select
+                [options]="locationOptions()"
+                [value]="event.locationId()"
+                [invalid]="submitted() && !isValidEvent.location()"
+                placeholder="Sélectionner un lieu"
+                searchPlaceholder="Rechercher par nom de salle…"
+                emptyLabel="Aucun lieu ne correspond"
+                (valueChange)="onSelectLocation($event)"
+              ></app-search-select>
+              <p *ngIf="venueCapacity() as capacity" class="mt-1.5 text-xs text-gray-500">
+                Capacité de la salle : <span class="font-medium text-gray-700">{{ capacity | number:'1.0-0' }}</span> places
+              </p>
+            </div>
+
+            <!-- Nouveau lieu -->
+            <div *ngIf="isCreateNewLocation" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label for="locationName" class="block text-sm font-medium text-gray-700 mb-1.5">
+                  Nom du lieu <span class="text-danger-500">*</span>
+                </label>
+                <input
+                  id="locationName"
+                  type="text"
+                  placeholder="Ex : Palais des Sports Mahamasina"
+                  [value]="event.locationName() || ''"
+                  (input)="event.locationName.set($any($event.target).value)"
+                  class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label for="locationSize" class="block text-sm font-medium text-gray-700 mb-1.5">
+                  Capacité <span class="text-danger-500">*</span>
+                </label>
+                <input
+                  id="locationSize"
+                  type="number"
+                  min="1"
+                  placeholder="0"
+                  [value]="event.locationSize() ?? ''"
+                  (input)="event.locationSize.set(+$any($event.target).value)"
+                  class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            <p *ngIf="submitted() && !isValidEvent.location()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              Sélectionnez un lieu ou renseignez son nom et sa capacité.
+            </p>
+          </div>
+        </section>
+
+        <!-- 4. Catégorie & organisateur -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center gap-3">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">4</span>
+            <div>
+              <h2 class="font-semibold text-gray-900">Classement et organisation</h2>
+              <p class="text-xs text-gray-500">Catégorie affichée au public, organisateur responsable</p>
+            </div>
+          </div>
+
+          <!-- Catégorie -->
+          <div class="mt-5 pt-5 border-t border-gray-100 first:border-0 first:pt-0">
+            <div class="flex items-center justify-between gap-3 mb-1.5">
+              <label class="text-sm font-medium text-gray-700">
+                Catégorie <span class="text-danger-500">*</span>
+              </label>
+              <button
+                type="button"
+                (click)="toggleCreateCategory()"
+                class="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-900 transition-colors"
+              >
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">{{ isCreateNewCategory ? 'list' : 'add' }}</mat-icon>
+                {{ isCreateNewCategory ? 'Choisir une existante' : 'Créer une catégorie' }}
+              </button>
+            </div>
+
+            <app-search-select
+              *ngIf="!isCreateNewCategory"
+              [options]="categoryOptions()"
+              [value]="event.categoryId()"
+              [invalid]="submitted() && !isValidEvent.category()"
+              placeholder="Sélectionner une catégorie"
+              searchPlaceholder="Rechercher une catégorie…"
+              emptyLabel="Aucune catégorie ne correspond"
+              (valueChange)="onSelectCategory($event)"
+            ></app-search-select>
+
+            <div *ngIf="isCreateNewCategory" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <input
+                  type="text"
+                  placeholder="Nom de la catégorie"
+                  [value]="event.categoryName() || ''"
+                  (input)="event.categoryName.set($any($event.target).value)"
+                  class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <input
+                  type="color"
+                  aria-label="Couleur de la catégorie"
+                  [value]="event.categoryColor() || '#3ab7bf'"
+                  (input)="event.categoryColor.set($any($event.target).value)"
+                  class="h-10 w-14 rounded-lg border border-gray-200 bg-white p-1 cursor-pointer"
+                />
+                <span class="text-xs text-gray-500">Couleur</span>
+              </div>
+            </div>
+
+            <p *ngIf="submitted() && !isValidEvent.category()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              Choisissez ou créez une catégorie.
+            </p>
+          </div>
+
+          <!-- Organisateur -->
+          <div class="mt-5 pt-5 border-t border-gray-100">
+            <div class="flex items-center justify-between gap-3 mb-1.5">
+              <label class="text-sm font-medium text-gray-700">
+                Organisateur <span class="text-danger-500">*</span>
+              </label>
+              <button
+                type="button"
+                (click)="toggleCreateOrganizer()"
+                class="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-900 transition-colors"
+              >
+                <mat-icon class="!w-3.5 !h-3.5 !text-sm">{{ isCreateNewOrganizer ? 'list' : 'add' }}</mat-icon>
+                {{ isCreateNewOrganizer ? 'Choisir un existant' : 'Créer un organisateur' }}
+              </button>
+            </div>
+
+            <app-search-select
+              *ngIf="!isCreateNewOrganizer"
+              [options]="organizerOptions()"
+              [value]="event.organizerId()"
+              [invalid]="submitted() && !isValidEvent.organizer()"
+              placeholder="Sélectionner un organisateur"
+              searchPlaceholder="Rechercher par nom ou email…"
+              emptyLabel="Aucun organisateur ne correspond"
+              (valueChange)="onSelectOrganizer($event)"
+            ></app-search-select>
+
+            <div *ngIf="isCreateNewOrganizer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Nom de l'organisateur *"
+                [value]="event.organizerName() || ''"
+                (input)="event.organizerName.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                [value]="event.organizerEmail() || ''"
+                (input)="event.organizerEmail.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              />
+              <input
+                type="tel"
+                placeholder="Téléphone"
+                [value]="event.organizerPhone() || ''"
+                (input)="event.organizerPhone.set($any($event.target).value)"
+                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              />
+              <input
+                type="url"
+                placeholder="Site web"
+                [value]="event.organizerWebsite() || ''"
+                (input)="event.organizerWebsite.set($any($event.target).value)"
+                class="w-full sm:col-span-2 h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              />
+            </div>
+
+            <p *ngIf="submitted() && !isValidEvent.organizer()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              Choisissez ou créez un organisateur.
+            </p>
+          </div>
+        </section>
+
+        <!-- 5. Billetterie -->
+        <section class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div class="flex items-center justify-between gap-4 p-6 pb-4">
+            <div class="flex items-center gap-3">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">5</span>
+              <div>
+                <h2 class="font-semibold text-gray-900">Billetterie</h2>
+                <p class="text-xs text-gray-500">Un tarif par catégorie de place</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="addTicket()"
+              class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 bg-white hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
+              <mat-icon class="!w-4 !h-4 !text-base">add</mat-icon>
+              Ajouter un tarif
+            </button>
+          </div>
+
+          <div class="px-6 pb-2 space-y-3">
+            <div
+              *ngFor="let ticket of event.tickets(); let i = index"
+              class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end rounded-lg border border-gray-100 bg-gray-50 p-3"
+            >
+              <div class="sm:col-span-5">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Nom du tarif</label>
+                <input
+                  type="text"
+                  placeholder="Ex : VIP, Gradin, Entrée générale"
+                  [value]="ticket.name()"
+                  (input)="ticket.name.set($any($event.target).value)"
+                  class="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div class="sm:col-span-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Prix (Ar)</label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  [value]="ticket.price()"
+                  (input)="ticket.price.set(+$any($event.target).value)"
+                  class="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div class="sm:col-span-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Places</label>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="0"
+                  [value]="ticket.size()"
+                  (input)="ticket.size.set(+$any($event.target).value)"
+                  class="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div class="sm:col-span-1 flex sm:justify-end">
+                <button
+                  type="button"
+                  (click)="removeTicket(ticket.id)"
+                  [disabled]="event.tickets().length === 1"
+                  [attr.aria-label]="'Supprimer le tarif ' + (i + 1)"
+                  class="inline-flex items-center justify-center h-9 w-9 rounded-lg text-gray-400 hover:text-danger-600 hover:bg-danger-50 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-danger-500"
+                >
+                  <mat-icon class="!w-5 !h-5 !text-xl">delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p *ngIf="submitted() && !isValidEvent.tickets()" class="px-6 pb-2 flex items-center gap-1 text-xs text-danger-600">
+            <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+            Chaque tarif doit avoir un nom et un nombre de places supérieur à zéro.
+          </p>
+
+          <p *ngIf="isOverCapacity()" class="mx-6 mb-2 flex items-start gap-2 rounded-lg bg-warning-50 px-3 py-2 text-xs text-warning-700">
+            <mat-icon class="!w-4 !h-4 !text-base flex-shrink-0">warning</mat-icon>
+            Les places mises en vente ({{ totalCapacity() | number:'1.0-0' }}) dépassent la capacité du lieu ({{ venueCapacity() | number:'1.0-0' }}).
+          </p>
+
+          <footer class="flex items-center justify-between gap-4 px-6 py-3 bg-gray-50 border-t border-gray-100 text-sm">
+            <span class="font-medium text-gray-600">Total</span>
+            <div class="flex items-center gap-6">
+              <span class="text-gray-500">{{ totalCapacity() | number:'1.0-0' }} places</span>
+              <span class="font-semibold text-primary-700">{{ totalRevenue() | ariary:'0 Ar' }}</span>
+            </div>
+          </footer>
+        </section>
+      </div>
+
+      <!-- Récapitulatif : ce qui manque, et à quoi ça ressemblera -->
+      <aside class="xl:sticky xl:top-6 space-y-5">
+        <section class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div class="relative h-28 bg-gradient-to-br from-primary-700 to-primary-400">
+            <img
+              *ngIf="event.imageUrl().length > 0"
+              [src]="event.imageUrl()[0]"
+              alt=""
+              class="w-full h-full object-cover"
+            />
+            <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/95 text-primary-700 shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary-600"></span>
+              À venir
+            </span>
+          </div>
+
+          <div class="p-5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Aperçu dans la liste</p>
+            <h3 class="mt-3 font-semibold text-gray-900 leading-snug line-clamp-2">
+              {{ event.title() || 'Titre de l\'événement' }}
+            </h3>
+
+            <!-- `items-start` : la date peut passer sur deux lignes dans cette colonne -->
+            <div class="mt-3.5 space-y-2.5">
+              <p class="flex items-start gap-2.5 text-sm leading-5 text-gray-500">
+                <mat-icon class="!w-4 !h-4 !text-base text-gray-400 flex-shrink-0 mt-0.5">event</mat-icon>
+                <span class="first-letter:uppercase">
+                  {{ event.startedAt() ? (event.startedAt() | date:'EEEE d MMMM y, HH:mm') : 'Date à définir' }}
+                </span>
+              </p>
+              <p class="flex items-start gap-2.5 text-sm leading-5 text-gray-500">
+                <mat-icon class="!w-4 !h-4 !text-base text-gray-400 flex-shrink-0 mt-0.5">place</mat-icon>
+                <span class="truncate">{{ event.locationName() || 'Lieu à définir' }}</span>
+              </p>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-end justify-between gap-3">
+              <div>
+                <p class="text-xs text-gray-400">À partir de</p>
+                <p class="mt-1 text-sm font-semibold text-gray-900">
+                  {{ minPrice() !== null ? (minPrice() | ariary) : '—' }}
+                </p>
+              </div>
+              <p class="text-xs text-gray-500">{{ totalCapacity() | number:'1.0-0' }} places</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-900">Avant de créer</h2>
+          <ul class="mt-3.5 space-y-2.5">
+            <li *ngFor="let item of checklist()" class="flex items-center gap-2.5 text-sm leading-5">
+              <mat-icon
+                class="!w-4 !h-4 !text-base flex-shrink-0"
+                [ngClass]="item.done ? 'text-success-600' : 'text-gray-300'"
+              >{{ item.done ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span [ngClass]="item.done ? 'text-gray-500 line-through' : 'text-gray-700'">{{ item.label }}</span>
+            </li>
+          </ul>
+
+          <p *ngIf="submitError()" class="mt-4 flex items-start gap-2 rounded-lg bg-danger-50 px-3 py-2 text-xs text-danger-700">
+            <mat-icon class="!w-4 !h-4 !text-base flex-shrink-0">error_outline</mat-icon>
+            {{ submitError() }}
+          </p>
+
+          <button
+            type="submit"
+            [disabled]="isSubmitting()"
+            class="mt-4 w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          >
+            <app-btn-loading *ngIf="isSubmitting()"></app-btn-loading>
+            <ng-container *ngIf="!isSubmitting()">
+              <mat-icon class="!w-5 !h-5 !text-xl">check</mat-icon>
+              Créer l'événement
+            </ng-container>
+          </button>
+          <p class="mt-2 text-center text-xs text-gray-400">
+            L'événement sera créé au statut « en attente ».
+          </p>
+        </section>
+      </aside>
+    </form>
+  </div>
+</div>
