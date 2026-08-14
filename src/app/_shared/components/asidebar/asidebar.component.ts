@@ -4,19 +4,34 @@ import {
   INavLink,
   NavbarLinkComponent,
 } from '../navbar-link/navbar-link.component';
-import { RouterLink } from '@angular/router';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '@/app/_core/services/auth/auth.service';
 
 @Component({
   selector: 'app-asidebar',
-  imports: [CommonModule, NavbarLinkComponent, RouterLink, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, NavbarLinkComponent, MatIconModule, MatTooltipModule],
   templateUrl: './asidebar.component.html',
   styleUrl: './asidebar.component.css',
 })
 export class AsidebarComponent {
-  userEmail = 'user@example.com';
-  userName = 'John Doe';
+  constructor(private auth: AuthService) {}
+
+  /** Compte connecté ; la sidebar n'affiche plus de valeurs en dur. */
+  get userName(): string {
+    const user = this.auth.currentUser();
+    const fullName = `${user?.firstname ?? ''} ${user?.lastname ?? ''}`.trim();
+    return fullName.length > 0 ? fullName : 'Utilisateur';
+  }
+
+  get userEmail(): string {
+    return this.auth.currentUser()?.email ?? '';
+  }
+
+  logout(): void {
+    this.auth.logout();
+  }
 
   @Input() isCollapsed: boolean = false;
 

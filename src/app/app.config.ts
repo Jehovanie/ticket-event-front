@@ -4,9 +4,10 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './_core/interceptors/auth.interceptor';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideCharts(withDefaultRegisterables()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
     { provide: LOCALE_ID, useValue: 'fr' },
   ],

@@ -1,0 +1,201 @@
+<div>
+  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Créer un compte</h1>
+  <p class="mt-1.5 text-sm text-gray-500">
+    Quelques informations et votre espace d'administration est prêt.
+  </p>
+
+  <div
+    *ngIf="errorMessage()"
+    class="mt-6 flex items-start gap-2.5 rounded-lg bg-danger-50 ring-1 ring-danger-100 px-3 py-2.5"
+    role="alert"
+  >
+    <mat-icon class="!w-5 !h-5 !text-xl text-danger-600 flex-shrink-0">error_outline</mat-icon>
+    <p class="text-sm leading-5 text-danger-700">{{ errorMessage() }}</p>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" novalidate class="mt-6 space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label for="firstname" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Prénom <span class="text-danger-500">*</span>
+        </label>
+        <input
+          id="firstname"
+          type="text"
+          autocomplete="given-name"
+          placeholder="Jean"
+          [value]="firstname()"
+          (input)="firstname.set($any($event.target).value)"
+          class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+          [ngClass]="submitted() && !isValidFirstname()
+            ? 'border-danger-300 focus:ring-danger-500'
+            : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+        />
+        <p *ngIf="submitted() && !isValidFirstname()" class="mt-1.5 text-xs text-danger-600">
+          Prénom requis (50 caractères maximum).
+        </p>
+      </div>
+
+      <div>
+        <label for="lastname" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Nom <span class="text-danger-500">*</span>
+        </label>
+        <input
+          id="lastname"
+          type="text"
+          autocomplete="family-name"
+          placeholder="Rakoto"
+          [value]="lastname()"
+          (input)="lastname.set($any($event.target).value)"
+          class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+          [ngClass]="submitted() && !isValidLastname()
+            ? 'border-danger-300 focus:ring-danger-500'
+            : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+        />
+        <p *ngIf="submitted() && !isValidLastname()" class="mt-1.5 text-xs text-danger-600">
+          Nom requis (50 caractères maximum).
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
+        Adresse email <span class="text-danger-500">*</span>
+      </label>
+      <div class="relative">
+        <mat-icon class="!w-4 !h-4 !text-base text-gray-400 absolute left-3 top-5 -translate-y-1/2 pointer-events-none">mail</mat-icon>
+        <input
+          id="email"
+          type="email"
+          autocomplete="email"
+          placeholder="vous@exemple.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          class="w-full h-10 pl-9 pr-3 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+          [ngClass]="submitted() && !isValidEmail()
+            ? 'border-danger-300 focus:ring-danger-500'
+            : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+        />
+      </div>
+      <p *ngIf="submitted() && !isValidEmail()" class="mt-1.5 text-xs text-danger-600">
+        Saisissez une adresse email valide.
+      </p>
+    </div>
+
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">
+        Mot de passe <span class="text-danger-500">*</span>
+      </label>
+      <div class="relative">
+        <mat-icon class="!w-4 !h-4 !text-base text-gray-400 absolute left-3 top-5 -translate-y-1/2 pointer-events-none">lock</mat-icon>
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          autocomplete="new-password"
+          placeholder="••••••••"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          class="w-full h-10 pl-9 pr-10 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+          [ngClass]="submitted() && !isValidPassword()
+            ? 'border-danger-300 focus:ring-danger-500'
+            : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+        />
+        <button
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+          class="absolute right-2 top-5 -translate-y-1/2 flex items-center justify-center h-7 w-7 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base">{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
+
+      <!-- Indicateur de robustesse : incite sans bloquer -->
+      <div *ngIf="password().length > 0" class="mt-2 flex items-center gap-3">
+        <div class="flex-1 flex gap-1">
+          <span
+            *ngFor="let step of [1, 2, 3, 4]"
+            class="h-1 flex-1 rounded-full transition-colors"
+            [ngClass]="step <= passwordScore()
+              ? (passwordScore() <= 1 ? 'bg-danger-500' : passwordScore() === 2 ? 'bg-warning-500' : 'bg-success-500')
+              : 'bg-gray-200'"
+          ></span>
+        </div>
+        <span
+          class="text-xs font-medium"
+          [ngClass]="passwordScore() <= 1 ? 'text-danger-600' : passwordScore() === 2 ? 'text-warning-700' : 'text-success-700'"
+        >
+          {{ passwordLabel() }}
+        </span>
+      </div>
+
+      <p *ngIf="submitted() && !isValidPassword()" class="mt-1.5 text-xs text-danger-600">
+        Le mot de passe doit contenir entre 4 et 72 caractères.
+      </p>
+      <p *ngIf="!submitted() || isValidPassword()" class="mt-1.5 text-xs text-gray-400">
+        4 caractères minimum, 8 ou plus recommandés.
+      </p>
+    </div>
+
+    <div>
+      <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1.5">
+        Confirmer le mot de passe <span class="text-danger-500">*</span>
+      </label>
+      <input
+        id="confirmPassword"
+        [type]="showPassword() ? 'text' : 'password'"
+        autocomplete="new-password"
+        placeholder="••••••••"
+        [value]="confirmPassword()"
+        (input)="confirmPassword.set($any($event.target).value)"
+        class="w-full h-10 px-3 rounded-lg border bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
+        [ngClass]="submitted() && !isValidConfirmation()
+          ? 'border-danger-300 focus:ring-danger-500'
+          : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500'"
+      />
+      <p *ngIf="submitted() && !isValidConfirmation()" class="mt-1.5 text-xs text-danger-600">
+        Les deux mots de passe ne correspondent pas.
+      </p>
+    </div>
+
+    <div>
+      <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">
+        Téléphone <span class="text-gray-400 font-normal">(facultatif)</span>
+      </label>
+      <div class="relative">
+        <mat-icon class="!w-4 !h-4 !text-base text-gray-400 absolute left-3 top-5 -translate-y-1/2 pointer-events-none">call</mat-icon>
+        <input
+          id="phone"
+          type="tel"
+          autocomplete="tel"
+          placeholder="+261 34 00 000 00"
+          [value]="phone()"
+          (input)="phone.set($any($event.target).value)"
+          class="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+        />
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isSubmitting()"
+      class="w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+    >
+      <app-btn-loading *ngIf="isSubmitting()"></app-btn-loading>
+      <ng-container *ngIf="!isSubmitting()">
+        Créer mon compte
+        <mat-icon class="!w-5 !h-5 !text-xl">arrow_forward</mat-icon>
+      </ng-container>
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-sm text-gray-500">
+    Vous avez déjà un compte ?
+    <a
+      routerLink="/auth/login"
+      class="font-medium text-primary-700 hover:text-primary-900 transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+    >
+      Se connecter
+    </a>
+  </p>
+</div>

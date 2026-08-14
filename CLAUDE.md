@@ -78,7 +78,26 @@ enveloped response (that mismatch is invisible to TypeScript and blows up at run
 Pagination is **server-side**: `?page=` (1-based) and `?itemsPerPage=`. List components hold the page state
 and re-query on page change; they must not slice a full array client-side.
 
-There are no HTTP interceptors and no auth token handling yet — `provideHttpClient()` is registered bare in `app.config.ts`.
+### Auth
+
+JWT, handled by `_core/services/auth/auth.service.ts` (`login` / `register` / `me` / `refreshToken` / `logout`),
+with `currentUser` as a signal read from storage at startup. API contract:
+
+| Endpoint | In | Out |
+| --- | --- | --- |
+| `POST /auth/register` | `{email, password, firstname, lastname, phone?, language?}` | `{token, refresh_token, user}` (201) |
+| `POST /auth/login` | `{email, password}` | `{token, refresh_token}` — 401 `{code, message}` on bad credentials |
+| `GET /user/me` | Bearer token | the user, roles included |
+
+The access token lives **15 minutes**. `authInterceptor` (`_core/interceptors/`) attaches the Bearer, and on a
+401 tries a single refresh before replaying the request; concurrent 401s share one refresh call. If the refresh
+fails, the session is cleared and the user lands back on `/auth/login`.
+
+Storage key prefix `ticketup.admin.*`; "stay signed in" picks `localStorage`, otherwise `sessionStorage` —
+`AuthService.storage()` resolves whichever holds the token.
+
+Routing: `/auth/**` sits under `AuthLayoutComponent` behind `guestGuard`; everything else is under
+`MainLayoutComponent` behind `authGuard`, which passes the attempted URL as `returnUrl`.
 
 ### Components
 

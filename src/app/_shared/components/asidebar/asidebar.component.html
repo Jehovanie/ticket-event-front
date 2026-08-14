@@ -69,27 +69,29 @@
 				<p class="text-xs text-primary-300 truncate">{{ userEmail }}</p>
 			</div>
 
-			<a
+			<button
+				type="button"
 				*ngIf="!isCollapsed"
-				routerLink="/auth/logout"
+				(click)="logout()"
 				matTooltip="Se déconnecter"
 				matTooltipPosition="right"
 				aria-label="Se déconnecter"
 				class="flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
 			>
 				<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
-			</a>
+			</button>
 		</div>
 
-		<a
+		<button
+			type="button"
 			*ngIf="isCollapsed"
-			routerLink="/auth/logout"
+			(click)="logout()"
 			matTooltip="Se déconnecter"
 			matTooltipPosition="right"
 			aria-label="Se déconnecter"
 			class="mx-auto mt-2 flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
 		>
 			<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
-		</a>
+		</button>
 	</div>
 </aside>
