@@ -19,8 +19,8 @@
       </span>
       <p class="text-sm font-medium text-gray-500">Revenu potentiel</p>
     </div>
-    <p class="mt-3 text-2xl font-bold text-gray-900 truncate" [title]="totalRevenue | ariary">
-      {{ totalRevenue | ariary }}
+    <p class="mt-3 text-2xl font-bold text-gray-900 truncate" [title]="totalRevenue | ariary:'0 Ar'">
+      {{ totalRevenue | ariary:'0 Ar' }}
     </p>
     <p class="mt-0.5 text-xs text-gray-400">si toutes les places sont vendues</p>
   </div>

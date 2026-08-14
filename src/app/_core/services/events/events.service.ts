@@ -39,16 +39,32 @@ export class EventsService extends AppService {
     );
   }
 
-  createEvent(event: IEvent): Observable<IEvent> {
-    return this.post<IApiResponse<IEvent>>('/events', event).pipe(
-      map((response) => response.data)
+  /**
+   * L'écriture ne renvoie pas forcément l'enveloppe `{ message, status, data }` :
+   * selon l'endpoint, l'entité peut arriver à la racine, voire le corps être
+   * vide. On déballe donc sans supposer la forme — sinon le résultat est
+   * `undefined` et le composant appelant plante sur `createdEvent.title`.
+   */
+  createEvent(event: IEvent): Observable<IEvent | null> {
+    return this.post<IApiResponse<IEvent> | IEvent | null>('/events', event).pipe(
+      map((response) => this.unwrap(response))
     );
   }
 
-  updateEvent(eventID: string | number, event: IEvent): Observable<IEvent> {
-    return this.put<IApiResponse<IEvent>>(`/events/${eventID}`, event).pipe(
-      map((response) => response.data)
+  updateEvent(eventID: string | number, event: IEvent): Observable<IEvent | null> {
+    return this.put<IApiResponse<IEvent> | IEvent | null>(`/events/${eventID}`, event).pipe(
+      map((response) => this.unwrap(response))
     );
+  }
+
+  private unwrap(response: IApiResponse<IEvent> | IEvent | null): IEvent | null {
+    if (!response) {
+      return null;
+    }
+    if (typeof response === 'object' && 'data' in response) {
+      return (response as IApiResponse<IEvent>).data ?? null;
+    }
+    return response as IEvent;
   }
 
   deleteEvent(eventID: string | number): Observable<void> {

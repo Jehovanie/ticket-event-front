@@ -12,12 +12,16 @@ import { formatNumber } from '@angular/common';
   standalone: true,
 })
 export class AriaryPipe implements PipeTransform {
-  transform(value: number | null | undefined): string {
+  /**
+   * @param zeroLabel texte affiché pour un montant nul. « Gratuit » convient à
+   * un prix de billet, pas à un total ou à un revenu : passer `'0 Ar'` dans ce cas.
+   */
+  transform(value: number | null | undefined, zeroLabel = 'Gratuit'): string {
     if (value === null || value === undefined || Number.isNaN(value)) {
       return '—';
     }
     if (value === 0) {
-      return 'Gratuit';
+      return zeroLabel;
     }
     return `${formatNumber(value, 'fr', '1.0-0')} Ar`;
   }

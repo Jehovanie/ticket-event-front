@@ -77,7 +77,7 @@
         <!-- Revenu potentiel -->
         <div class="sm:text-right sm:w-40 flex-shrink-0">
           <p class="text-xs text-gray-400">Revenu potentiel</p>
-          <p class="text-sm font-semibold text-primary-700">{{ getRevenue(ticketType) | ariary }}</p>
+          <p class="text-sm font-semibold text-primary-700">{{ getRevenue(ticketType) | ariary:'0 Ar' }}</p>
         </div>
       </div>
     </li>
@@ -91,7 +91,7 @@
     <p class="text-sm font-medium text-gray-600">Total</p>
     <div class="flex items-center gap-6 text-sm">
       <span class="text-gray-500">{{ totalTickets | number:'1.0-0' }} places</span>
-      <span class="font-semibold text-primary-700">{{ totalRevenue | ariary }}</span>
+      <span class="font-semibold text-primary-700">{{ totalRevenue | ariary:'0 Ar' }}</span>
     </div>
   </footer>
 </section>

@@ -52,7 +52,7 @@ Events routes: `''` (list) · `new` · `:eventID` (detail) · `:eventID/ticket-s
 | Endpoint | Shape |
 | --- | --- |
 | `/events`, `/events/{id}`, `/categories` | `{ message, status, data }` — collections add `data: { itemsTotal, currentPage, nombreParPage, items }` |
-| `/organizers`, `/locations` | Hydra: `{ totalItems, member }` |
+| `/organizers`, `/locations` | Content-negotiated: plain array with `Accept: application/json` (what `AppService` sends), Hydra `{ totalItems, member }` without it. Capped at 30 items/page — use `getAllPages()` to get the full list |
 | `/admin/events/{id}` | `{ events: { event, statusTicket } }` — no `data` |
 
 `_core/services/AppService.ts` is the base class: it holds `HttpClient` + `environment.apiUrl` and exposes

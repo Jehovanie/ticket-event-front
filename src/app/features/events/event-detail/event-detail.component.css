@@ -1,16 +1,3 @@
-/* Notifications : alignées sur les couleurs sémantiques du thème. */
-::ng-deep .mat-mdc-snack-bar-container.snackbar-success {
-  --mdc-snackbar-container-color: #047857;
-  --mat-snack-bar-button-color: #ffffff;
-  --mdc-snackbar-supporting-text-color: #ffffff;
-}
-
-::ng-deep .mat-mdc-snack-bar-container.snackbar-error {
-  --mdc-snackbar-container-color: #b91c1c;
-  --mat-snack-bar-button-color: #ffffff;
-  --mdc-snackbar-supporting-text-color: #ffffff;
-}
-
 /* À l'impression, on garde le contenu et on retire les commandes. */
 @media print {
   .sticky,

@@ -54,3 +54,40 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/*
+ * Angular Material fige `mat-icon` à 24 px. Dès qu'on redimensionne la boîte
+ * (`!w-4 !h-4 !text-base`), le glyphe reste calé en haut à gauche et se
+ * désaligne du texte voisin. On le recentre dans sa boîte, quelle que soit sa
+ * taille, ce qui rend fiables toutes les lignes « icône + texte ».
+ */
+mat-icon.mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
+}
+
+/*
+ * Notifications : le conteneur Material impose une surface sombre, un padding
+ * et une ombre. On l'efface pour que `NotificationComponent` dessine seul sa
+ * carte. Ces règles sont globales à dessein — l'overlay est rendu hors des
+ * composants, dans `.cdk-overlay-container`.
+ */
+.mat-mdc-snack-bar-container.app-notification .mdc-snackbar__surface {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  border-radius: 0;
+}
+
+.mat-mdc-snack-bar-container.app-notification .mat-mdc-snack-bar-label {
+  padding: 0;
+}
+
+.mat-mdc-snack-bar-container.app-notification {
+  max-width: 28rem;
+  margin: 1rem;
+}

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../_shared/services/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { IEvent } from '../../../_core/model/event.interface';
@@ -30,7 +30,6 @@ import { EventDetailTicketTypesComponent } from './components/event-detail-ticke
     CommonModule,
     MatIconModule,
     MatButtonModule,
-    MatSnackBarModule,
     LoadingComponent,
     EventDetailHeaderComponent,
     EventDetailStatsComponent,
@@ -68,7 +67,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private eventsService: EventsService,
-    private snackBar: MatSnackBar
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -210,9 +209,10 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     this.eventsService.createEvent(duplicatedEvent)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (newEvent: IEvent) => {
+        next: (newEvent: IEvent | null) => {
           this.showNotification('Événement dupliqué avec succès', 'success');
-          this.router.navigate(['/events', newEvent.id]);
+          // Sans id renvoyé, on retombe sur la liste plutôt que sur `/events/undefined`.
+          this.router.navigate(newEvent?.id ? ['/events', newEvent.id] : ['/events']);
         },
         error: (err: any) => {
           console.error('Erreur lors de la duplication:', err);
@@ -284,12 +284,11 @@ export class EventDetailComponent implements OnInit, OnDestroy {
    * Affiche une notification
    */
   private showNotification(message: string, type: 'success' | 'error'): void {
-    this.snackBar.open(message, 'Fermer', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: type === 'success' ? 'snackbar-success' : 'snackbar-error'
-    });
+    if (type === 'success') {
+      this.notification.success(message);
+    } else {
+      this.notification.error(message);
+    }
   }
 
   /**
