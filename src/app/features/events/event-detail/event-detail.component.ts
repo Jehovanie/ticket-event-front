@@ -6,6 +6,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { IEvent } from '../../../_core/model/event.interface';
+import {
+  IEventStatusDetail,
+  IEventStatusTicket,
+} from '../../../_core/model/event-status.interface';
 import { ICategory } from '../../../_core/model/category.interface';
 import { ILocation } from '../../../_core/model/location.interface';
 import { IOrganizer } from '../../../_core/model/organizer.interface';
@@ -16,18 +20,8 @@ import { EventDetailHeaderComponent } from './components/event-detail-header/eve
 import { EventDetailStatsComponent } from './components/event-detail-stats/event-detail-stats.component';
 import { EventDetailInfoComponent } from './components/event-detail-info/event-detail-info.component';
 import { EventDetailMetadataComponent } from './components/event-detail-metadata/event-detail-metadata.component';
+import { EventDetailOrganizerComponent } from './components/event-detail-organizer/event-detail-organizer.component';
 import { EventDetailTicketTypesComponent } from './components/event-detail-ticket-types/event-detail-ticket-types.component';
-
-export type EventStateType = {
-  statusTicket: {
-    global: { [key: string]: number }[];
-    actuel: { [key: string]: number }[];
-    filter: {
-      time: string;
-      value: { [key: string]: number }[];
-    };
-  };
-};
 
 @Component({
   selector: 'app-event-detail',
@@ -42,6 +36,7 @@ export type EventStateType = {
     EventDetailStatsComponent,
     EventDetailInfoComponent,
     EventDetailMetadataComponent,
+    EventDetailOrganizerComponent,
     EventDetailTicketTypesComponent
   ],
   templateUrl: './event-detail.component.html',
@@ -55,7 +50,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   public error: string | null = null;
   
   // État des statistiques
-  public eventStats: EventStateType | null = null;
+  public eventStats: IEventStatusTicket | null = null;
   public isLoadingStats = false;
   
   // Données typées
@@ -100,7 +95,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.eventsService.get(`/events/${this.eventID}`)
+    this.eventsService.getEvent(this.eventID)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (event: IEvent) => {
@@ -126,8 +121,8 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     this.eventsService.getDetailStatusEvent(this.eventID)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (stats: EventStateType) => {
-          this.eventStats = stats;
+        next: (stats: IEventStatusDetail) => {
+          this.eventStats = stats.statusTicket;
           this.isLoadingStats = false;
         },
         error: (err) => {
@@ -179,7 +174,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
     this.isDeleting = true;
 
-    this.eventsService.delete(`/events/${this.eventID}`)
+    this.eventsService.deleteEvent(this.eventID)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -212,14 +207,12 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     delete duplicatedEvent.createdAt;
     delete duplicatedEvent.updatedAt;
 
-    this.eventsService.create('/events', duplicatedEvent)
+    this.eventsService.createEvent(duplicatedEvent)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (newEvent: any) => {
+        next: (newEvent: IEvent) => {
           this.showNotification('Événement dupliqué avec succès', 'success');
-          // Extraire l'ID de la réponse @id
-          const id = newEvent['@id']?.split('/').pop() || newEvent.id;
-          this.router.navigate(['/events', id]);
+          this.router.navigate(['/events', newEvent.id]);
         },
         error: (err: any) => {
           console.error('Erreur lors de la duplication:', err);

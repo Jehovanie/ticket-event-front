@@ -14,7 +14,6 @@ import { AsidebarComponent } from '@/app/_shared/components/asidebar/asidebar.co
 })
 export class MainLayoutComponent {
   title = 'review';
-  sidebarWidth = 'auto';
 
   isCollapsed = false;
 

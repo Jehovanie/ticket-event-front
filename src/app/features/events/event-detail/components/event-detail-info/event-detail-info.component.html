@@ -1,63 +1,60 @@
-<!-- Image Gallery -->
-<div class="bg-white rounded-lg shadow overflow-hidden" *ngIf="event.imageUrl && event.imageUrl.length > 0">
-    <div class="relative w-full h-96">
-      <img [src]="event.imageUrl[currentImageIndex]" [alt]="event.title" class="w-full h-full object-cover">
-      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-black bg-opacity-70 px-4 py-2 rounded-full" *ngIf="event.imageUrl.length > 1">
-        <button mat-icon-button (click)="previousImage.emit()" class="!text-white">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-        <span class="text-white text-sm font-medium px-2">{{ currentImageIndex + 1 }} / {{ event.imageUrl.length }}</span>
-        <button mat-icon-button (click)="nextImage.emit()" class="!text-white">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-    </div>
-  </div>
+<!-- Galerie -->
+<!--
+  TODO (temporaire) : l'API ne renvoie pas encore `imageUrl`. En attendant, on
+  retombe sur une image factice (`public/myTicket.png`) afin de pouvoir valider
+  la mise en page de la galerie. À supprimer dès que le back-end fournit les
+  visuels : il suffira de remettre `*ngIf="event.imageUrl?.length"` sur le bloc.
+-->
+<div
+  class="bg-white rounded-xl border border-gray-200 overflow-hidden"
+  *ngIf="(event.imageUrl && event.imageUrl.length > 0 ? event.imageUrl : ['/myTicket.png']) as images"
+>
+  <div class="relative w-full h-80">
+    <img [src]="images[currentImageIndex] || images[0]" [alt]="event.title" class="w-full h-full object-cover">
 
-  <!-- Description -->
-  <div class="bg-white rounded-lg shadow p-6">
-    <div class="flex items-center gap-3 mb-4">
-      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">description</mat-icon>
-      <h2 class="text-xl font-semibold text-gray-800">Description</h2>
-    </div>
-    <p class="text-gray-700 leading-relaxed">{{ event.description || 'Aucune description disponible.' }}</p>
-  </div>
+    <!-- Repère visuel : sans lui, l'image factice passerait pour une vraie donnée -->
+    <span
+      *ngIf="!event.imageUrl || event.imageUrl.length === 0"
+      class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium bg-black/60 text-white backdrop-blur-sm"
+    >
+      Image de démonstration
+    </span>
 
-  <!-- Date & Time -->
-  <div class="bg-white rounded-lg shadow p-6">
-    <div class="flex items-center gap-3 mb-4">
-      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">event</mat-icon>
-      <h2 class="text-xl font-semibold text-gray-800">Date et Heure</h2>
-    </div>
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-blue-500 mt-1">schedule</mat-icon>
-        <div>
-          <p class="font-semibold text-gray-800">Début</p>
-          <p class="text-gray-600 mt-1">{{ event.startedAt | titleCaseDateFr }}</p>
-        </div>
-      </div>
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-blue-500 mt-1">event_available</mat-icon>
-        <div>
-          <p class="font-semibold text-gray-800">Fin</p>
-          <p class="text-gray-600 mt-1">{{ event.endAt | titleCaseDateFr }}</p>
-        </div>
-      </div>
+    <div
+      class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full"
+      *ngIf="images.length > 1"
+    >
+      <button
+        type="button"
+        (click)="previousImage.emit()"
+        aria-label="Image précédente"
+        class="flex items-center justify-center h-8 w-8 rounded-full text-white hover:bg-white/20 transition-colors"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl">chevron_left</mat-icon>
+      </button>
+      <span class="text-white text-xs font-medium px-2">{{ currentImageIndex + 1 }} / {{ images.length }}</span>
+      <button
+        type="button"
+        (click)="nextImage.emit()"
+        aria-label="Image suivante"
+        class="flex items-center justify-center h-8 w-8 rounded-full text-white hover:bg-white/20 transition-colors"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl">chevron_right</mat-icon>
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- Location -->
-  <div class="bg-white rounded-lg shadow p-6" *ngIf="location">
-    <div class="flex items-center gap-3 mb-4">
-      <mat-icon class="text-blue-600 !w-10 !h-10 !text-4xl">place</mat-icon>
-      <h2 class="text-xl font-semibold text-gray-800">Lieu</h2>
-    </div>
-    <div>
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ location.name }}</h3>
-      <p class="flex items-center gap-2 text-gray-600">
-        <mat-icon class="!w-5 !h-5">people</mat-icon>
-        Capacité: {{ location.size }} personnes
-      </p>
-    </div>
-  </div>
+<!-- Description -->
+<section class="bg-white rounded-xl border border-gray-200 p-6">
+  <h2 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+    <mat-icon class="!w-4 !h-4 !text-base">description</mat-icon>
+    Description
+  </h2>
+  <p
+    class="mt-3 leading-relaxed"
+    [ngClass]="event.description ? 'text-gray-700' : 'text-gray-400 italic'"
+  >
+    {{ event.description || 'Aucune description renseignée.' }}
+  </p>
+</section>

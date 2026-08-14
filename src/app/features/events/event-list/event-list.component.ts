@@ -4,19 +4,14 @@ import { ListEventComponent } from './components/list-event/list-event.component
 import { FilterEventComponent } from './components/filter-event/filter-event.component';
 import { CommonModule } from '@angular/common';
 
-import { EventsService } from '@/app/_core/services/events/events.service';
-import { CategoryService } from '@/app/_core/services/category/category.service';
-import { OrganizerService } from '@/app/_core/services/organizer/organizer.service';
+import {
+  DEFAULT_EVENTS_PER_PAGE,
+  EventsService,
+} from '@/app/_core/services/events/events.service';
 
-import { ICategory, IEvent, IOrganizer } from '@/app/_core/model';
+import { IEvent } from '@/app/_core/model';
 import { LoadingComponent } from '@/app/_shared/components/loading/loading.component';
 import { RouterLink } from '@angular/router';
-
-type DataType<T> = {
-  succes: boolean;
-  items: T[];
-  error: any[];
-};
 
 @Component({
   selector: 'app-event-list',
@@ -33,137 +28,72 @@ type DataType<T> = {
 export class EventListComponent implements OnInit {
   public data: {
     isLoading: boolean;
-    events: DataType<IEvent>;
-    category: DataType<ICategory>;
-    organizer: DataType<IOrganizer>;
+    events: IEvent[];
+    error: string | null;
   } = {
     isLoading: true,
-    events: {
-      succes: false,
-      items: [],
-      error: [],
-    },
-    category: {
-      succes: false,
-      items: [],
-      error: [],
-    },
-    organizer: {
-      succes: false,
-      items: [],
-      error: [],
-    },
+    events: [],
+    error: null,
   };
 
-  constructor(
-    private eventService: EventsService,
-    private categoryService: CategoryService,
-    private organizerService: OrganizerService
-  ) {}
+  /** État de la pagination serveur (`page` est indexée à partir de 1). */
+  public pagination = {
+    page: 1,
+    pageSize: DEFAULT_EVENTS_PER_PAGE,
+    itemsTotal: 0,
+  };
+
+  /** Bascule grille / liste : portée par la page pour rester dans la barre d'outils. */
+  public viewMode: 'grid' | 'list' = 'grid';
+
+  setViewMode(mode: 'grid' | 'list'): void {
+    this.viewMode = mode;
+  }
+
+  constructor(private eventService: EventsService) {}
 
   ngOnInit(): void {
-    this.initData();
+    this.loadEvents();
   }
 
-  initData() {
-    this.initEvents();
-    // this.initCategories();
-    // this.initOrganizers();
-  }
+  loadEvents(
+    page: number = this.pagination.page,
+    pageSize: number = this.pagination.pageSize
+  ): void {
+    this.data = { ...this.data, isLoading: true, error: null };
 
-  async initEvents() {
-    try {
-      this.eventService.getAllEvents().subscribe((data) => {
+    this.eventService.getAllEvents(page, pageSize).subscribe({
+      next: (result) => {
+        this.pagination = {
+          page: result.currentPage ?? page,
+          pageSize: result.nombreParPage ?? pageSize,
+          itemsTotal: result.itemsTotal ?? 0,
+        };
+
         this.data = {
-          ...this.data,
           isLoading: false,
-          events: {
-            ...this.data.events,
-            succes: true,
-            items: data,
-            error: [],
-          },
+          events: Array.isArray(result.items) ? result.items : [],
+          error: null,
         };
-      });
-    } catch (e) {
-      this.data = {
-        ...this.data,
-        events: {
-          ...this.data.events,
-          succes: false,
-          error: [
-            {
-              error: e,
-            },
-          ],
-        },
-      };
-    }
+      },
+      error: (e) => {
+        console.error('Erreur lors du chargement des événements:', e);
+        this.data = {
+          isLoading: false,
+          events: [],
+          error: 'Impossible de charger les événements.',
+        };
+      },
+    });
   }
 
-  async initCategories() {
-    try {
-      this.categoryService.getAllCategries().subscribe((data) => {
-        this.data = {
-          ...this.data,
-          isLoading:
-            this.data.events.succes &&
-            this.data.category.succes &&
-            this.data.organizer.succes,
-          category: {
-            ...this.data.category,
-            succes: true,
-            items: data,
-            error: [],
-          },
-        };
-      });
-    } catch (e) {
-      this.data = {
-        ...this.data,
-        category: {
-          ...this.data.events,
-          succes: false,
-          error: [
-            {
-              error: e,
-            },
-          ],
-        },
-      };
-    }
+  /** Le composant enfant demande une autre page : on refait un appel serveur. */
+  onPageChange(page: number): void {
+    this.loadEvents(page);
   }
 
-  async initOrganizers() {
-    try {
-      this.organizerService.getAllOrganizers().subscribe((data) => {
-        this.data = {
-          ...this.data,
-          isLoading:
-            this.data.events.succes &&
-            this.data.category.succes &&
-            this.data.organizer.succes,
-          category: {
-            ...this.data.category,
-            succes: true,
-            items: data,
-            error: [],
-          },
-        };
-      });
-    } catch (e) {
-      this.data = {
-        ...this.data,
-        organizer: {
-          ...this.data.events,
-          succes: false,
-          error: [
-            {
-              error: e,
-            },
-          ],
-        },
-      };
-    }
+  /** Changer la taille de page renvoie toujours sur la première page. */
+  onPageSizeChange(pageSize: number): void {
+    this.loadEvents(1, pageSize);
   }
 }

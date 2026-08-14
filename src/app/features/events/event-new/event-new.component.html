@@ -234,11 +234,11 @@
                     Annuler
                 </a>
 
-                <button type="submit" class="bg-primary-100 hover:bg-primary-600 text-white px-4 py-2 text-sm font-medium cursor-not-allowed" *ngIf="isSubmitting" disabled>
+                <button type="submit" class="bg-primary text-white px-4 py-2 text-sm font-medium rounded opacity-70 cursor-not-allowed" *ngIf="isSubmitting" disabled>
                     <app-btn-loading></app-btn-loading>
                 </button>
 
-                <button type="submit" class="bg-primary-100 cursor-pointer hover:bg-primary-600 text-white px-4 py-2 text-sm font-medium" *ngIf="!isSubmitting">
+                <button type="submit" class="bg-primary cursor-pointer hover:bg-primary-800 text-white px-4 py-2 text-sm font-medium rounded transition-colors" *ngIf="!isSubmitting">
                     Créer l'événement
                 </button>
             </div>

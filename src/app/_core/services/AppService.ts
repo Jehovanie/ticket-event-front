@@ -1,42 +1,46 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export class AppService<T> {
-  headers!: HttpHeaders;
+/**
+ * Base de tous les services HTTP.
+ *
+ * Les méthodes sont volontairement `protected` et typées par la *réponse brute*
+ * (`R`), enveloppe comprise : l'API ne renvoie jamais un tableau ou une entité
+ * nue. Chaque service concret expose des méthodes métier qui déballent la
+ * réponse (voir `EventsService`), afin qu'aucun composant ne manipule
+ * l'enveloppe.
+ */
+export class AppService {
+  protected headers: HttpHeaders;
 
-  constructor(private httpClient: HttpClient, private baseUrl: string) {
+  constructor(protected httpClient: HttpClient, protected baseUrl: string) {
     this.headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
   }
 
-  get(url: string): Observable<T> {
-    return this.httpClient.get<T>(`${this.baseUrl}${url}`, {
+  protected get<R>(url: string, params?: HttpParams): Observable<R> {
+    return this.httpClient.get<R>(`${this.baseUrl}${url}`, {
+      headers: this.headers,
+      params,
+    });
+  }
+
+  protected post<R>(url: string, body: unknown): Observable<R> {
+    return this.httpClient.post<R>(`${this.baseUrl}${url}`, body, {
       headers: this.headers,
     });
   }
 
-  getAll(url: string): Observable<T[]> {
-    return this.httpClient.get<T[]>(`${this.baseUrl}${url}`, {
+  protected put<R>(url: string, body: unknown): Observable<R> {
+    return this.httpClient.put<R>(`${this.baseUrl}${url}`, body, {
       headers: this.headers,
     });
   }
 
-  create(url: string, data: T): Observable<T> {
-    return this.httpClient.post<T>(`${this.baseUrl}${url}`, data, {
-      headers: this.headers,
-    });
-  }
-
-  update(url: string, data: T): Observable<T> {
-    return this.httpClient.put<T>(`${this.baseUrl}${url}`, data, {
-      headers: this.headers,
-    });
-  }
-
-  delete(url: string): Observable<T> {
-    return this.httpClient.delete<T>(`${this.baseUrl}${url}`, {
+  protected remove<R>(url: string): Observable<R> {
+    return this.httpClient.delete<R>(`${this.baseUrl}${url}`, {
       headers: this.headers,
     });
   }

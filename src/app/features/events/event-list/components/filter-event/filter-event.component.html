@@ -1,33 +1,33 @@
-<div class="flex flex-col lg:flex-row gap-4">
-  <!-- Search -->
-  <div class="relative flex-1 max-w-md">
+<div class="flex flex-col lg:flex-row lg:items-center gap-3">
+  <!-- Recherche -->
+  <div class="relative flex-1 min-w-0 lg:max-w-sm">
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      <svg class="h-4.5 w-4.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
     </div>
-    <input 
-      type="text" 
-      placeholder="Rechercher un événement..." 
-      class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+    <input
+      type="text"
+      placeholder="Rechercher un événement..."
+      class="block w-full h-10 pl-10 pr-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
     />
   </div>
 
-  <!-- Date Filter -->
+  <!-- Date -->
   <div class="relative">
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      <svg class="h-4.5 w-4.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
       </svg>
     </div>
-    <input 
-      type="date" 
-      class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+    <input
+      type="date"
+      class="block w-full h-10 pl-10 pr-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-600 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
     />
   </div>
 
-  <!-- Status Filter -->
-  <select class="block w-full lg:w-48 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+  <!-- Statut -->
+  <select class="block w-full lg:w-44 h-10 px-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-600 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
     <option value="">Tous les statuts</option>
     <option value="upcoming">À venir</option>
     <option value="ongoing">En cours</option>
@@ -35,15 +35,18 @@
     <option value="cancelled">Annulé</option>
   </select>
 
-  <!-- Category Filter -->
-  <select class="block w-full lg:w-48 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+  <!-- Catégorie -->
+  <select class="block w-full lg:w-44 h-10 px-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-600 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
     <option value="">Toutes catégories</option>
   </select>
 
-  <!-- Reset Button -->
-  <button class="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+  <!-- Réinitialiser -->
+  <button
+    type="button"
+    class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+  >
+    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
     </svg>
     Réinitialiser
   </button>

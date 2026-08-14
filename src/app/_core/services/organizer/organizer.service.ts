@@ -1,20 +1,27 @@
 import { Injectable } from '@angular/core';
 import { AppService } from '../AppService';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environements/environement';
-import { IOrganizer } from '../../model/organizer.interface';
-import { Observable } from 'rxjs';
+import { IHydraCollection, IOrganizer } from '../../model';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrganizerService extends AppService<IOrganizer> {
+export class OrganizerService extends AppService {
 
   constructor(httpClient: HttpClient) {
     super(httpClient, environment.apiUrl);
   }
 
-    getAllOrganizers(page = 0): Observable<IOrganizer[]> {
-      return this.getAll('/organizers');
-    }
+  /** Endpoint au format Hydra : les organisateurs sont dans `member`. */
+  getAllOrganizers(page = 1, itemsPerPage = 100): Observable<IOrganizer[]> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('itemsPerPage', itemsPerPage);
+
+    return this.get<IHydraCollection<IOrganizer>>('/organizers', params).pipe(
+      map((collection) => collection.member ?? [])
+    );
+  }
 }

@@ -17,7 +17,10 @@
 	<!-- Content Section -->
 	<div class="flex-1 overflow-y-auto flex flex-col bg-white shadow pt-2">
 		<app-loading *ngIf="eventStates.isLoading" class="flex-1"></app-loading>
-		<div *ngIf="!eventStates.isLoading" class="flex-1 p-4">
+		<div *ngIf="!eventStates.isLoading && eventStates.error.length > 0" class="flex-1 flex items-center justify-center p-4">
+			<p class="text-sm text-red-600">Impossible de charger les statistiques de l'événement.</p>
+		</div>
+		<div *ngIf="!eventStates.isLoading && eventStates.error.length === 0" class="flex-1 p-4">
 			<app-state-event [eventStates]="eventStates.value"></app-state-event>
 		</div>
 	</div>

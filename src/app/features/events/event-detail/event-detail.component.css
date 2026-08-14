@@ -1,52 +1,20 @@
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Material Angular Overrides */
+/* Notifications : alignées sur les couleurs sémantiques du thème. */
 ::ng-deep .mat-mdc-snack-bar-container.snackbar-success {
-  --mdc-snackbar-container-color: #4caf50;
+  --mdc-snackbar-container-color: #047857;
   --mat-snack-bar-button-color: #ffffff;
   --mdc-snackbar-supporting-text-color: #ffffff;
 }
 
 ::ng-deep .mat-mdc-snack-bar-container.snackbar-error {
-  --mdc-snackbar-container-color: #f44336;
+  --mdc-snackbar-container-color: #b91c1c;
   --mat-snack-bar-button-color: #ffffff;
   --mdc-snackbar-supporting-text-color: #ffffff;
 }
 
-/* Fix Material Table styles with TailwindCSS */
-::ng-deep .mat-mdc-table {
-  background: transparent;
-}
-
-::ng-deep .mat-mdc-header-cell {
-  font-weight: 600;
-  color: #374151;
-  background-color: #f9fafb;
-}
-
-::ng-deep .mat-mdc-cell {
-  color: #1f2937;
-}
-
-::ng-deep .mat-mdc-row:hover {
-  background-color: #f9fafb;
-}
-
-/* Print Styles */
+/* À l'impression, on garde le contenu et on retire les commandes. */
 @media print {
   .sticky,
   button {
     display: none !important;
   }
 }
-

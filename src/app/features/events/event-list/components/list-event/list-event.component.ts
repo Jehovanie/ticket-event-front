@@ -1,139 +1,110 @@
-import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule, formatNumber } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { TitleCaseDateFrPipe } from '@/app/_shared/pipes/titleCaseDateFr';
 import { FormsModule } from '@angular/forms';
 
 import { IEvent } from '@/app/_core/model';
+import { DEFAULT_EVENTS_PER_PAGE } from '@/app/_core/services/events/events.service';
 
+/**
+ * Affichage d'une page d'événements.
+ *
+ * Composant purement présentationnel : il ne découpe rien lui-même, la page
+ * courante lui est fournie par le parent qui interroge le serveur. Les clics
+ * de pagination sont remontés via `pageChange` / `pageSizeChange`.
+ */
 @Component({
   selector: 'app-list-event',
   imports: [
     CommonModule,
     RouterLink,
     TitleCaseDateFrPipe,
-    MatPaginatorModule,
-    MatTableModule,
     FormsModule,
   ],
   templateUrl: './list-event.component.html',
   styleUrl: './list-event.component.css',
 })
-export class ListEventComponent implements AfterViewInit {
-  @Input() events!: IEvent[];
+export class ListEventComponent {
+  /** Événements de la page courante, tels que renvoyés par le serveur. */
+  @Input() events: IEvent[] = [];
 
-  displayedColumns: string[] = [
-    'Numéro',
-    'Evénement',
-    'Date de debut',
-    'Date de fin',
-    'Lieu',
-    'Place maximum',
-    'Place libre',
-    'Status',
-    'Action'
-  ];
-  dataSource = new MatTableDataSource<IEvent>(this.events);
+  /** Nombre total d'événements côté serveur (toutes pages confondues). */
+  @Input() itemsTotal = 0;
 
-  // Pagination properties
-  currentPage = 0;
-  pageSize = 6;
-  paginatedEvents: IEvent[] = [];
+  /** Page courante, indexée à partir de 1 (convention de l'API). */
+  @Input() currentPage = 1;
 
-  // View mode
-  viewMode: 'grid' | 'list' = 'grid';
+  @Input() pageSize = DEFAULT_EVENTS_PER_PAGE;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  /** Mode d'affichage piloté par la barre d'outils de la page. */
+  @Input() viewMode: 'grid' | 'list' = 'grid';
 
-  constructor() {}
-
-  ngOnInit() {
-    this.dataSource = new MatTableDataSource<IEvent>(this.events);
-    this.updatePaginatedEvents();
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
-
-  ngOnChanges() {
-    this.dataSource = new MatTableDataSource<IEvent>(this.events);
-    this.updatePaginatedEvents();
-  }
+  @Output() pageChange = new EventEmitter<number>();
+  @Output() pageSizeChange = new EventEmitter<number>();
 
   /**
-   * Met à jour les événements paginés
+   * Garde-fou : si l'API renvoie autre chose qu'un tableau, on affiche une
+   * liste vide plutôt que de faire planter le rendu.
    */
-  updatePaginatedEvents(): void {
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedEvents = this.dataSource.data.slice(startIndex, endIndex);
+  get displayedEvents(): IEvent[] {
+    return Array.isArray(this.events) ? this.events : [];
   }
 
   /**
-   * Navigation vers la page précédente
-   */
-  previousPage(): void {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      this.updatePaginatedEvents();
-    }
-  }
-
-  /**
-   * Navigation vers la page suivante
-   */
-  nextPage(): void {
-    if (this.currentPage < this.getTotalPages() - 1) {
-      this.currentPage++;
-      this.updatePaginatedEvents();
-    }
-  }
-
-  /**
-   * Navigation vers une page spécifique
+   * Demande une page au parent
    */
   goToPage(page: number): void {
-    this.currentPage = page;
-    this.updatePaginatedEvents();
+    if (page < 1 || page > this.getTotalPages() || page === this.currentPage) {
+      return;
+    }
+    this.pageChange.emit(page);
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
   }
 
   /**
-   * Changement de la taille de page
+   * Changement de la taille de page (relance une requête serveur)
    */
-  onPageSizeChange(): void {
-    this.currentPage = 0;
-    this.updatePaginatedEvents();
+  onPageSizeChange(pageSize: number): void {
+    this.pageSizeChange.emit(+pageSize);
   }
 
   /**
    * Calcul du nombre total de pages
    */
   getTotalPages(): number {
-    return Math.ceil(this.dataSource.data.length / this.pageSize);
+    if (this.pageSize <= 0) {
+      return 1;
+    }
+    return Math.max(1, Math.ceil(this.itemsTotal / this.pageSize));
   }
 
   /**
-   * Obtient les numéros de pages à afficher
+   * Obtient les numéros de pages à afficher (indexés à partir de 1)
    */
   getPageNumbers(): number[] {
     const totalPages = this.getTotalPages();
-    const pages: number[] = [];
     const maxPagesToShow = 5;
+    const pages: number[] = [];
 
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 0; i < totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const start = Math.max(0, this.currentPage - 2);
-      const end = Math.min(totalPages, start + maxPagesToShow);
-      
-      for (let i = start; i < end; i++) {
-        pages.push(i);
-      }
+    let start = 1;
+    if (totalPages > maxPagesToShow) {
+      start = Math.min(
+        Math.max(1, this.currentPage - 2),
+        totalPages - maxPagesToShow + 1
+      );
+    }
+    const end = Math.min(totalPages, start + maxPagesToShow - 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
     }
 
     return pages;
@@ -143,14 +114,17 @@ export class ListEventComponent implements AfterViewInit {
    * Obtient l'index de début pour l'affichage
    */
   getStartIndex(): number {
-    return this.currentPage * this.pageSize + 1;
+    if (this.itemsTotal === 0) {
+      return 0;
+    }
+    return (this.currentPage - 1) * this.pageSize + 1;
   }
 
   /**
    * Obtient l'index de fin pour l'affichage
    */
   getEndIndex(): number {
-    return Math.min((this.currentPage + 1) * this.pageSize, this.dataSource.data.length);
+    return Math.min(this.currentPage * this.pageSize, this.itemsTotal);
   }
 
   /**
@@ -192,9 +166,65 @@ export class ListEventComponent implements AfterViewInit {
   }
 
   /**
-   * Change le mode de vue
+   * Clé de statut : pilote la couleur de la pastille et du visuel de la carte,
+   * pour que le statut se lise sans avoir à relire le texte.
    */
-  setViewMode(mode: 'grid' | 'list'): void {
-    this.viewMode = mode;
+  getStatusKey(event: IEvent): 'upcoming' | 'ongoing' | 'past' {
+    if (this.isEventOngoing(event)) return 'ongoing';
+    if (this.isEventPast(event)) return 'past';
+    return 'upcoming';
+  }
+
+  /** Nom de la catégorie, quand l'API la renvoie sous forme d'objet. */
+  getCategoryName(event: IEvent): string | null {
+    if (event.category && typeof event.category === 'object') {
+      return event.category.name ?? null;
+    }
+    return null;
+  }
+
+  /** Prix d'entrée le plus bas, pour afficher un « à partir de ». */
+  getMinPrice(event: IEvent): number | null {
+    const prices = (event.ticket_type ?? [])
+      .map((type) => type.prix)
+      .filter((prix): prix is number => typeof prix === 'number');
+
+    return prices.length > 0 ? Math.min(...prices) : null;
+  }
+
+  hasPrice(event: IEvent): boolean {
+    return this.getMinPrice(event) !== null;
+  }
+
+  /** Libellé au-dessus du prix. */
+  getPriceCaption(event: IEvent): string {
+    return this.hasPrice(event) ? 'À partir de' : 'Tarifs';
+  }
+
+  /**
+   * Prix formaté en ariary. Un `0` reste un tarif valide (« Gratuit »), d'où le
+   * passage par une méthode plutôt qu'un test de vérité dans le template.
+   */
+  getPriceLabel(event: IEvent): string {
+    const minPrice = this.getMinPrice(event);
+
+    if (minPrice === null) {
+      return 'Non définis';
+    }
+    if (minPrice <= 0) {
+      return 'Gratuit';
+    }
+    return `${formatNumber(minPrice, 'fr', '1.0-0')} Ar`;
+  }
+
+  /**
+   * Capacité : somme des quotas de billets, à défaut la taille du lieu.
+   */
+  getCapacity(event: IEvent): number {
+    const types = event.ticket_type ?? [];
+    if (types.length > 0) {
+      return types.reduce((total, type) => total + (type.quantite_max ?? 0), 0);
+    }
+    return event.location?.size ?? 0;
   }
 }

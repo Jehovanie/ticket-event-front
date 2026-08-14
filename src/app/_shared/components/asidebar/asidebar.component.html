@@ -1,37 +1,95 @@
-<aside [class.w-auto]="!isCollapsed" class="bg-primary text-white fixed top-0 left-0 h-screen flex flex-col transition-all duration-300">
-	<div class="flex items-center justify-between py-6 px-6 flex-shrink-0">
-		<span [class.hidden]="isCollapsed" class="text-2xl font-bold transition-all duration-300">MyLogo</span>
-		<button (click)="toggleSidebar()" class="flex items-center justify-center hover:bg-angular-700 rounded-md p-2 transition-colors flex-shrink-0">
-			<mat-icon>{{ isCollapsed ? 'expand_right' : 'expand_left' }}</mat-icon>
+<aside class="h-full w-full bg-primary text-white flex flex-col overflow-hidden">
+	<!-- Marque + repli -->
+	<div class="flex items-center h-16 px-3 flex-shrink-0 gap-3" [class.justify-center]="isCollapsed">
+		<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary-500 text-primary-900 flex-shrink-0">
+			<mat-icon class="!w-5 !h-5 !text-xl">local_activity</mat-icon>
+		</span>
+		<div *ngIf="!isCollapsed" class="min-w-0 flex-1">
+			<p class="text-sm font-bold leading-tight truncate">TicketUp</p>
+			<p class="text-[11px] leading-tight text-primary-300">Administration</p>
+		</div>
+		<button
+			*ngIf="!isCollapsed"
+			(click)="toggleSidebar()"
+			matTooltip="Replier le menu"
+			matTooltipPosition="right"
+			aria-label="Replier le menu"
+			class="flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+		>
+			<mat-icon class="!w-5 !h-5 !text-xl">chevron_left</mat-icon>
 		</button>
 	</div>
-	<div class="border-b border-gray-500 flex-shrink-0"></div>
-	<nav class="grid gap-4 p-6 overflow-y-auto flex-1 transition-all duration-300" [class.grid-cols-1]="isCollapsed" [class.grid-cols-2]="!isCollapsed">
-		<app-navbar-link [objectLink]="{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Événements', icon: 'event', route: '/events', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Organisateurs', icon: 'people', route: '/organizers', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Utilisateurs', icon: 'person', route: '/users', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Tickets & Ventes', icon: 'shopping_cart', route: '/tickets', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Paiements', icon: 'payment', route: '/payments', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Support & Modération', icon: 'support_agent', route: '/support', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Notifications', icon: 'notifications', route: '/notifications', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Contenus & Paramètres', icon: 'article', route: '/content', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Sécurité & Rôles', icon: 'security', route: '/security', isCollapsed: isCollapsed }"></app-navbar-link>
-		<app-navbar-link [objectLink]="{ label: 'Paramètres système', icon: 'settings', route: '/system-settings', isCollapsed: isCollapsed }"></app-navbar-link>
-	</nav>
-	<div class="border-t border-gray-500 flex-shrink-0"></div>
-	<div [class.flex-col]="isCollapsed" [class.flex-row]="!isCollapsed" class="flex items-center justify-between p-6 flex-shrink-0 transition-all duration-300">
-		<div [class.hidden]="isCollapsed" class="flex items-center gap-3 min-w-0 transition-all duration-300">
-			<div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
-				<mat-icon class="text-white">account_circle</mat-icon>
-			</div>
-			<div class="min-w-0 truncate">
-				<p class="text-sm font-semibold truncate">{{ userName }}</p>
-				<p class="text-xs text-gray-300 truncate">{{ userEmail }}</p>
+
+	<button
+		*ngIf="isCollapsed"
+		(click)="toggleSidebar()"
+		matTooltip="Déplier le menu"
+		matTooltipPosition="right"
+		aria-label="Déplier le menu"
+		class="mx-auto mb-2 flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+	>
+		<mat-icon class="!w-5 !h-5 !text-xl">chevron_right</mat-icon>
+	</button>
+
+	<!-- Navigation -->
+	<nav class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 pb-4 nav-scroll">
+		<div *ngFor="let section of navSections; let first = first" [class.mt-5]="!first">
+			<p
+				*ngIf="!isCollapsed"
+				class="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary-300"
+			>
+				{{ section.title }}
+			</p>
+			<div *ngIf="isCollapsed && !first" class="mx-2 mb-3 border-t border-white/10"></div>
+
+			<div class="space-y-1">
+				<app-navbar-link
+					*ngFor="let link of section.links"
+					[link]="link"
+					[isCollapsed]="isCollapsed"
+				></app-navbar-link>
 			</div>
 		</div>
-		<a routerLink="/auth/logout" class="flex items-center justify-center w-8 h-8 hover:bg-angular-700 rounded-md transition-colors flex-shrink-0">
-			<mat-icon class="text-lg">logout</mat-icon>
+	</nav>
+
+	<!-- Compte -->
+	<div class="border-t border-white/10 p-3 flex-shrink-0">
+		<div class="flex items-center gap-3" [class.justify-center]="isCollapsed">
+			<span
+				class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white flex-shrink-0 ring-1 ring-white/15"
+				[matTooltip]="userName + ' · ' + userEmail"
+				[matTooltipDisabled]="!isCollapsed"
+				matTooltipPosition="right"
+			>
+				{{ userInitials }}
+			</span>
+
+			<div *ngIf="!isCollapsed" class="min-w-0 flex-1">
+				<p class="text-sm font-medium truncate">{{ userName }}</p>
+				<p class="text-xs text-primary-300 truncate">{{ userEmail }}</p>
+			</div>
+
+			<a
+				*ngIf="!isCollapsed"
+				routerLink="/auth/logout"
+				matTooltip="Se déconnecter"
+				matTooltipPosition="right"
+				aria-label="Se déconnecter"
+				class="flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+			>
+				<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
+			</a>
+		</div>
+
+		<a
+			*ngIf="isCollapsed"
+			routerLink="/auth/logout"
+			matTooltip="Se déconnecter"
+			matTooltipPosition="right"
+			aria-label="Se déconnecter"
+			class="mx-auto mt-2 flex items-center justify-center h-8 w-8 rounded-lg text-primary-300 hover:text-white hover:bg-danger-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+		>
+			<mat-icon class="!w-5 !h-5 !text-xl">logout</mat-icon>
 		</a>
 	</div>
 </aside>

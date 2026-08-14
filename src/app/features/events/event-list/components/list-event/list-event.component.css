@@ -1,22 +1,2 @@
-/* Grid layout animations */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Old table styles (kept for backwards compatibility if needed) */
-table {
-  width: 100%;
-}
-
-::ng-deep .mat-mdc-paginator .mat-mdc-select {
-  padding: 0 15px !important;
-}
-
-::ng-deep .mat-mdc-select-panel-above div.mat-mdc-select-panel {
-  opacity: 1 !important;
-  background-color: white !important;
-}
+/* Les utilitaires Tailwind (line-clamp, grid, transitions) couvrent l'ensemble
+   du composant : aucun style local n'est nécessaire ici. */
