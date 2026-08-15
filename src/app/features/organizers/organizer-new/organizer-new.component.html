@@ -1,0 +1,165 @@
+<div class="w-full h-full flex flex-col bg-gray-50">
+  <!-- En-tête : l'action principale reste visible en permanence -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="px-6 lg:px-8 pt-4">
+      <a
+        routerLink="/organizers"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-primary-700 transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      >
+        <mat-icon class="!w-4 !h-4 !text-base">arrow_back</mat-icon>
+        Organisateurs
+      </a>
+    </div>
+
+    <div class="px-6 lg:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start gap-4 min-w-0">
+        <span class="hidden sm:flex h-12 w-12 rounded-xl bg-primary-50 text-primary-700 items-center justify-center flex-shrink-0">
+          <mat-icon>add</mat-icon>
+        </span>
+        <div class="min-w-0">
+          <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Nouvel organisateur</h1>
+          <p class="text-sm text-gray-500 mt-1">Vous en serez automatiquement le responsable</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <a
+          routerLink="/organizers"
+          class="inline-flex items-center justify-center h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          Annuler
+        </a>
+        <button
+          type="submit"
+          form="organizerForm"
+          [disabled]="isSubmitting()"
+          class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <app-btn-loading *ngIf="isSubmitting()"></app-btn-loading>
+          <ng-container *ngIf="!isSubmitting()">
+            <mat-icon class="!w-5 !h-5 !text-xl">check</mat-icon>
+            Créer l'organisateur
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto">
+    <form
+      id="organizerForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="max-w-2xl mx-auto px-6 lg:px-8 py-6 space-y-4"
+    >
+      <div
+        *ngIf="submitError()"
+        class="flex items-start gap-2 rounded-xl border border-danger-100 bg-danger-50 px-4 py-3 text-sm text-danger-700"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl flex-shrink-0">error_outline</mat-icon>
+        <span>{{ submitError() }}</span>
+      </div>
+
+      <section class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">1</span>
+          <div>
+            <h2 class="font-semibold text-gray-900">Identité</h2>
+            <p class="text-xs text-gray-500">Le nom et l'email apparaîtront sur vos événements</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label for="organizerName" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Nom <span class="text-danger-500">*</span>
+            </label>
+            <input
+              id="organizerName"
+              type="text"
+              maxlength="100"
+              placeholder="Tech Madagascar"
+              [value]="name()"
+              (input)="name.set($any($event.target).value)"
+              [class.border-danger-500]="submitted() && !isValidName()"
+              class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            />
+            <p *ngIf="submitted() && !isValidName()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              Le nom est obligatoire (100 caractères maximum).
+            </p>
+          </div>
+
+          <div>
+            <label for="organizerEmail" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Email <span class="text-danger-500">*</span>
+            </label>
+            <input
+              id="organizerEmail"
+              type="email"
+              maxlength="100"
+              placeholder="contact@techmada.mg"
+              [value]="email()"
+              (input)="email.set($any($event.target).value)"
+              [class.border-danger-500]="submitted() && !isValidEmail()"
+              class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            />
+            <p *ngIf="submitted() && !isValidEmail()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              Renseignez une adresse email valide.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-700 text-xs font-bold flex-shrink-0">2</span>
+          <div>
+            <h2 class="font-semibold text-gray-900">Coordonnées</h2>
+            <p class="text-xs text-gray-500">Facultatif, modifiable plus tard</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="organizerPhone" class="block text-sm font-medium text-gray-700 mb-1.5">Téléphone</label>
+            <input
+              id="organizerPhone"
+              type="tel"
+              maxlength="50"
+              placeholder="+261 34 12 345 67"
+              [value]="phone()"
+              (input)="phone.set($any($event.target).value)"
+              class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label for="organizerWebsite" class="block text-sm font-medium text-gray-700 mb-1.5">Site web</label>
+            <input
+              id="organizerWebsite"
+              type="url"
+              maxlength="100"
+              placeholder="https://techmada.mg"
+              [value]="website()"
+              (input)="website.set($any($event.target).value)"
+              [class.border-danger-500]="submitted() && !isValidWebsite()"
+              class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            />
+            <p *ngIf="submitted() && !isValidWebsite()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
+              L'adresse doit commencer par http:// ou https://.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <p class="flex items-start gap-2 text-xs text-gray-500 px-1">
+        <mat-icon class="!w-4 !h-4 !text-base flex-shrink-0">info_outline</mat-icon>
+        Vous serez rattaché à cette organisation comme responsable : vous pourrez y publier
+        des événements et y inviter d'autres membres.
+      </p>
+    </form>
+  </div>
+</div>

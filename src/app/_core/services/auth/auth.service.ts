@@ -24,6 +24,9 @@ const TOKEN_KEY = 'ticketup.admin.token';
 const REFRESH_TOKEN_KEY = 'ticketup.admin.refresh_token';
 const USER_KEY = 'ticketup.admin.user';
 
+/** Rôle global côté API (`User::ROLE_SUPER_ADMIN`). */
+export const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
 /**
  * Authentification par JWT.
  *
@@ -40,6 +43,16 @@ export class AuthService extends AppService {
   /** Utilisateur courant, lu au démarrage depuis le stockage. */
   readonly currentUser = signal<IUser | null>(this.readStoredUser());
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
+
+  /**
+   * Rôle global du fondateur : il ouvre tous les droits mais ne crée **aucune
+   * appartenance à une organisation**. Les endpoints en `/me` (`/events/me`,
+   * `/user/me/organizations`) répondent donc vide pour lui — c'est ce drapeau
+   * qui permet de basculer sur les listes complètes.
+   */
+  readonly isSuperAdmin = computed(() =>
+    (this.currentUser()?.roles ?? []).includes(ROLE_SUPER_ADMIN)
+  );
 
   /** Renouvellement en cours, partagé pour ne pas le déclencher en parallèle. */
   private refreshInFlight$: Observable<string> | null = null;

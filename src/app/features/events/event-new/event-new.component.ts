@@ -66,12 +66,11 @@ export class EventNewComponent implements OnInit {
     categoryName: WritableSignal<string | null>;
     categoryColor: WritableSignal<string | null>;
 
+    /**
+     * Seul l'identifiant est retenu : l'organisateur se choisit parmi les
+     * existants, il ne se crée plus depuis ce formulaire (page dédiée à venir).
+     */
     organizerId: WritableSignal<number | null>;
-    organizerName: WritableSignal<string | null>;
-    organizerEmail: WritableSignal<string | null>;
-    organizerPhone: WritableSignal<string | null>;
-    organizerAddress: WritableSignal<string | null>;
-    organizerWebsite: WritableSignal<string | null>;
 
     tickets: WritableSignal<TicketDraft[]>;
   };
@@ -89,7 +88,6 @@ export class EventNewComponent implements OnInit {
   };
 
   isCreateNewLocation = false;
-  isCreateNewOrganizer = false;
   isCreateNewCategory = false;
 
   /** Passe à `true` à la première tentative d'envoi : on n'accuse pas l'utilisateur avant. */
@@ -161,11 +159,6 @@ export class EventNewComponent implements OnInit {
       categoryColor: signal<string | null>('#3ab7bf'),
 
       organizerId: signal<number | null>(null),
-      organizerName: signal<string | null>(null),
-      organizerEmail: signal<string | null>(null),
-      organizerPhone: signal<string | null>(null),
-      organizerAddress: signal<string | null>(null),
-      organizerWebsite: signal<string | null>(null),
     };
 
     this.isValidEvent = {
@@ -191,11 +184,7 @@ export class EventNewComponent implements OnInit {
           ? (this.event.categoryName() ?? '').trim().length > 0
           : this.event.categoryId() !== null
       ),
-      organizer: computed(() =>
-        this.isCreateNewOrganizer
-          ? (this.event.organizerName() ?? '').trim().length > 0
-          : this.event.organizerId() !== null
-      ),
+      organizer: computed(() => this.event.organizerId() !== null),
       tickets: computed(() => {
         const tickets = this.event.tickets();
         return (
@@ -303,17 +292,7 @@ export class EventNewComponent implements OnInit {
   }
 
   onSelectOrganizer(value: string) {
-    const organizerId = value ? +value : null;
-    this.event.organizerId.set(organizerId);
-
-    const selected = this.organizers().find(
-      (organizer) => +(organizer.id ?? 0) === organizerId
-    );
-    this.event.organizerName.set(selected?.name ?? null);
-    this.event.organizerEmail.set(selected?.email ?? null);
-    this.event.organizerPhone.set(selected?.phone ?? null);
-    this.event.organizerAddress.set(selected?.address ?? null);
-    this.event.organizerWebsite.set(selected?.website ?? null);
+    this.event.organizerId.set(value ? +value : null);
   }
 
   /** Bascule « choisir » / « créer » en repartant d'un état propre. */
@@ -329,16 +308,6 @@ export class EventNewComponent implements OnInit {
     this.event.categoryId.set(null);
     this.event.categoryName.set(null);
     this.event.categoryColor.set('#3ab7bf');
-  }
-
-  toggleCreateOrganizer() {
-    this.isCreateNewOrganizer = !this.isCreateNewOrganizer;
-    this.event.organizerId.set(null);
-    this.event.organizerName.set(null);
-    this.event.organizerEmail.set(null);
-    this.event.organizerPhone.set(null);
-    this.event.organizerAddress.set(null);
-    this.event.organizerWebsite.set(null);
   }
 
   setImageUrl(url: string) {
@@ -404,7 +373,7 @@ export class EventNewComponent implements OnInit {
   }
 
   initOrganizers() {
-    this.organizerService.getAllOrganizers().subscribe({
+    this.organizerService.getMyOrganizers().subscribe({
       next: (organizers) => this.organizers.set(organizers),
       error: () => this.organizers.set([]),
     });
@@ -432,14 +401,9 @@ export class EventNewComponent implements OnInit {
       color: this.event.categoryColor() || '',
     };
 
-    // `address` n'existe pas sur l'entité Organizer de l'API : l'envoyer est sans effet.
-    const organizer = {
-      id: this.event.organizerId(),
-      name: this.event.organizerName(),
-      email: this.event.organizerEmail(),
-      phone: this.event.organizerPhone(),
-      website: this.event.organizerWebsite(),
-    };
+    // `EventInputDenormalizer::getOrganizer()` recharge l'entité dès que `id` est
+    // présent et ignore le reste : envoyer nom, email… serait sans effet.
+    const organizer = { id: this.event.organizerId() };
 
     const tickets = this.event.tickets().map((ticket) => ({
       name: ticket.name(),

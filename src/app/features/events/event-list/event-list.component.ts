@@ -62,7 +62,7 @@ export class EventListComponent implements OnInit {
   ): void {
     this.data = { ...this.data, isLoading: true, error: null };
 
-    this.eventService.getAllEvents(page, pageSize).subscribe({
+    this.eventService.getMyEvents(page, pageSize).subscribe({
       next: (result) => {
         this.pagination = {
           page: result.currentPage ?? page,

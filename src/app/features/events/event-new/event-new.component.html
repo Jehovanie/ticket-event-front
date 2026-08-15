@@ -361,22 +361,11 @@
 
           <!-- Organisateur -->
           <div class="mt-5 pt-5 border-t border-gray-100">
-            <div class="flex items-center justify-between gap-3 mb-1.5">
-              <label class="text-sm font-medium text-gray-700">
-                Organisateur <span class="text-danger-500">*</span>
-              </label>
-              <button
-                type="button"
-                (click)="toggleCreateOrganizer()"
-                class="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-900 transition-colors"
-              >
-                <mat-icon class="!w-3.5 !h-3.5 !text-sm">{{ isCreateNewOrganizer ? 'list' : 'add' }}</mat-icon>
-                {{ isCreateNewOrganizer ? 'Choisir un existant' : 'Créer un organisateur' }}
-              </button>
-            </div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Organisateur <span class="text-danger-500">*</span>
+            </label>
 
             <app-search-select
-              *ngIf="!isCreateNewOrganizer"
               [options]="organizerOptions()"
               [value]="event.organizerId()"
               [invalid]="submitted() && !isValidEvent.organizer()"
@@ -386,40 +375,21 @@
               (valueChange)="onSelectOrganizer($event)"
             ></app-search-select>
 
-            <div *ngIf="isCreateNewOrganizer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Nom de l'organisateur *"
-                [value]="event.organizerName() || ''"
-                (input)="event.organizerName.set($any($event.target).value)"
-                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                [value]="event.organizerEmail() || ''"
-                (input)="event.organizerEmail.set($any($event.target).value)"
-                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-              <input
-                type="tel"
-                placeholder="Téléphone"
-                [value]="event.organizerPhone() || ''"
-                (input)="event.organizerPhone.set($any($event.target).value)"
-                class="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-              <input
-                type="url"
-                placeholder="Site web"
-                [value]="event.organizerWebsite() || ''"
-                (input)="event.organizerWebsite.set($any($event.target).value)"
-                class="w-full sm:col-span-2 h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-            </div>
+            <!-- Sans organisateur rattaché, le formulaire est un cul-de-sac : on donne la sortie. -->
+            <p *ngIf="organizers().length === 0" class="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">info_outline</mat-icon>
+              Aucun organisateur n'est rattaché à votre compte.
+              <a
+                routerLink="/organizers/new"
+                class="font-medium text-primary-700 hover:text-primary-900 hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              >
+                En créer un
+              </a>
+            </p>
 
             <p *ngIf="submitted() && !isValidEvent.organizer()" class="mt-1.5 flex items-center gap-1 text-xs text-danger-600">
               <mat-icon class="!w-3.5 !h-3.5 !text-sm">error_outline</mat-icon>
-              Choisissez ou créez un organisateur.
+              Choisissez un organisateur.
             </p>
           </div>
         </section>

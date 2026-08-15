@@ -28,6 +28,10 @@ export const routes: Routes = [
       {
         path: 'events',
         loadChildren: () => import('./features/events/events.routes').then(m => m.EVENTS_ROUTES)
+      },
+      {
+        path: 'organizers',
+        loadChildren: () => import('./features/organizers/organizers.routes').then(m => m.ORGANIZERS_ROUTES)
       }
     ]
   },

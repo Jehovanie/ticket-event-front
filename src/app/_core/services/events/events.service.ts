@@ -4,6 +4,7 @@ import { environment } from '../../../environements/environement';
 import { AppService } from '../AppService';
 import { IApiResponse, IEvent, IEventStatusDetail, IPaginated } from '../../model';
 import { map, Observable } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 /** Nombre d'événements demandés par défaut au serveur. */
 export const DEFAULT_EVENTS_PER_PAGE = 12;
@@ -12,7 +13,7 @@ export const DEFAULT_EVENTS_PER_PAGE = 12;
   providedIn: 'root',
 })
 export class EventsService extends AppService {
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient, private auth: AuthService) {
     super(httpClient, environment.apiUrl);
   }
 
@@ -29,6 +30,34 @@ export class EventsService extends AppService {
       .set('itemsPerPage', itemsPerPage);
 
     return this.get<IApiResponse<IPaginated<IEvent>>>('/events', params).pipe(
+      map((response) => response.data)
+    );
+  }
+
+  /**
+   * Uniquement les événements qui concernent l'utilisateur connecté.
+   *
+   * Un événement n'a pas d'auteur : il appartient à une organisation, et c'est
+   * l'appartenance (`OrganizerMembership`) qui fait le lien. `/events/me` renvoie
+   * donc l'union des événements des organisations dont la personne est membre,
+   * dans exactement la même enveloppe que `/events`.
+   *
+   * Le fondateur, lui, n'appartient à aucune organisation : sa liste arriverait
+   * vide alors qu'il a accès à tout. On lui sert l'inventaire complet.
+   */
+  getMyEvents(
+    page = 1,
+    itemsPerPage = DEFAULT_EVENTS_PER_PAGE
+  ): Observable<IPaginated<IEvent>> {
+    if (this.auth.isSuperAdmin()) {
+      return this.getAllEvents(page, itemsPerPage);
+    }
+
+    const params = new HttpParams()
+      .set('page', page)
+      .set('itemsPerPage', itemsPerPage);
+
+    return this.get<IApiResponse<IPaginated<IEvent>>>('/events/me', params).pipe(
       map((response) => response.data)
     );
   }

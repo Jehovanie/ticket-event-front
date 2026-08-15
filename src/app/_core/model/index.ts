@@ -8,7 +8,12 @@ import {
 import { ICategory } from "./category.interface";
 import { IEvent } from "./event.interface";
 import { IEventStatusDetail, IEventStatusTicket } from "./event-status.interface";
-import { IOrganizer } from "./organizer.interface";
+import {
+  ICreateOrganizerPayload,
+  IMyOrganizations,
+  IMyOrganizer,
+  IOrganizer,
+} from "./organizer.interface";
 import {ILocation } from "./location.interface";
 import { IPaymentTicket } from "./payment_ticket.interface";
 import { ITicket } from "./ticket.interface";
@@ -20,12 +25,15 @@ export type {
   IApiResponse,
   IAuthTokens,
   ICategory,
+  ICreateOrganizerPayload,
   IEvent,
   IEventStatusDetail,
   IEventStatusTicket,
   IHydraCollection,
   ILocation,
   ILoginPayload,
+  IMyOrganizations,
+  IMyOrganizer,
   IOrganizer,
   IPaginated,
   IPaymentTicket,

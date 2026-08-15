@@ -1,0 +1,162 @@
+<div class="w-full h-full flex flex-col bg-gray-50">
+  <!-- En-tête de page : identité, volume, action principale -->
+  <header class="bg-white border-b border-gray-200 px-6 py-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <span class="hidden sm:flex h-12 w-12 rounded-xl bg-primary-50 text-primary-700 items-center justify-center flex-shrink-0">
+          <mat-icon class="!w-6 !h-6 !text-2xl">groups</mat-icon>
+        </span>
+        <div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Organisateurs</h1>
+            <span
+              *ngIf="!data.isLoading && !data.error && data.organizers.length > 0"
+              class="px-2.5 py-0.5 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold ring-1 ring-primary-100"
+            >
+              {{ data.organizers.length }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Les organisations auxquelles vous appartenez, et votre rôle dans chacune</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="loadOrganizers()"
+          [disabled]="data.isLoading"
+          title="Actualiser la liste"
+          class="inline-flex items-center justify-center h-10 w-10 rounded-lg border border-gray-200 text-gray-500 bg-white hover:bg-gray-50 hover:text-primary-700 disabled:opacity-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <svg class="w-5 h-5" [class.animate-spin]="data.isLoading" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+
+        <a
+          routerLink="/organizers/new"
+          class="inline-flex items-center justify-center gap-2 bg-primary text-white px-5 h-10 rounded-lg font-medium text-sm hover:bg-primary-800 active:bg-primary-900 transition-colors shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Nouvel organisateur
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto">
+    <div *ngIf="data.isLoading" class="w-full h-full flex items-center justify-center">
+      <app-loading></app-loading>
+    </div>
+
+    <div *ngIf="!data.isLoading && data.error" class="w-full h-full flex items-center justify-center px-6">
+      <div class="max-w-sm w-full text-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger-50 text-danger-600">
+          <mat-icon class="!w-6 !h-6 !text-2xl">error_outline</mat-icon>
+        </span>
+        <p class="mt-4 text-sm text-gray-700">{{ data.error }}</p>
+        <button
+          type="button"
+          (click)="loadOrganizers()"
+          class="mt-5 inline-flex items-center justify-center gap-2 bg-primary text-white px-5 h-10 rounded-lg font-medium text-sm hover:bg-primary-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+        >
+          Réessayer
+        </button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!data.isLoading && !data.error">
+      <!--
+        Deux écrans vides bien distincts : le rôle global n'ouvre aucune
+        appartenance, dire « vous n'avez aucune organisation » au fondateur
+        serait faux.
+      -->
+      <div *ngIf="data.organizers.length === 0" class="w-full h-full flex items-center justify-center px-6 py-10">
+        <div class="max-w-md w-full text-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+          <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary-700">
+            <mat-icon class="!w-6 !h-6 !text-2xl">{{ data.isSuperAdmin ? 'verified_user' : 'groups' }}</mat-icon>
+          </span>
+
+          <ng-container *ngIf="data.isSuperAdmin; else aucuneOrganisation">
+            <h2 class="mt-4 font-semibold text-gray-900">Votre rôle est global</h2>
+            <p class="mt-1.5 text-sm text-gray-500">
+              En tant que fondateur, vous avez accès à toutes les organisations sans appartenir
+              à aucune. Créez-en une si vous voulez y être rattaché comme responsable.
+            </p>
+          </ng-container>
+
+          <ng-template #aucuneOrganisation>
+            <h2 class="mt-4 font-semibold text-gray-900">Aucune organisation</h2>
+            <p class="mt-1.5 text-sm text-gray-500">
+              Vous n'êtes rattaché à aucune organisation. Créez la vôtre pour pouvoir
+              publier des événements.
+            </p>
+          </ng-template>
+
+          <a
+            routerLink="/organizers/new"
+            class="mt-5 inline-flex items-center justify-center gap-2 bg-primary text-white px-5 h-10 rounded-lg font-medium text-sm hover:bg-primary-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          >
+            <mat-icon class="!w-5 !h-5 !text-xl">add</mat-icon>
+            Créer un organisateur
+          </a>
+        </div>
+      </div>
+
+      <div *ngIf="data.organizers.length > 0" class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <article
+          *ngFor="let organizer of data.organizers"
+          class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4"
+        >
+          <div class="flex items-start gap-3">
+            <span class="flex h-11 w-11 rounded-xl bg-primary-50 text-primary-700 items-center justify-center text-sm font-bold flex-shrink-0">
+              {{ initials(organizer.name) }}
+            </span>
+            <div class="min-w-0 flex-1">
+              <h2 class="font-semibold text-gray-900 truncate">{{ organizer.name }}</h2>
+              <p class="text-xs text-gray-500 truncate">{{ organizer.email }}</p>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ring-1 flex-shrink-0"
+              [ngClass]="roleTone(organizer.role).classes"
+            >
+              <mat-icon class="!w-3.5 !h-3.5 !text-sm">{{ roleTone(organizer.role).icon }}</mat-icon>
+              {{ organizer.roleLabel }}
+            </span>
+          </div>
+
+          <dl class="text-sm space-y-1.5 border-t border-gray-100 pt-3.5">
+            <div class="flex items-center gap-2 text-gray-600">
+              <mat-icon class="!w-4 !h-4 !text-base text-gray-400">call</mat-icon>
+              <dd class="truncate">{{ organizer.phone || 'Téléphone non renseigné' }}</dd>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <mat-icon class="!w-4 !h-4 !text-base text-gray-400">language</mat-icon>
+              <dd class="truncate">
+                <a
+                  *ngIf="organizer.website; else pasDeSite"
+                  [href]="organizer.website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+                >
+                  {{ organizer.website }}
+                </a>
+                <ng-template #pasDeSite>Site non renseigné</ng-template>
+              </dd>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <mat-icon class="!w-4 !h-4 !text-base text-gray-400">event_available</mat-icon>
+              <dd class="truncate">
+                Membre depuis le
+                <span class="first-letter:uppercase">{{ organizer.joinedAt | date: 'longDate' }}</span>
+              </dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+    </ng-container>
+  </div>
+</div>
