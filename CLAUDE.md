@@ -41,7 +41,9 @@ The Angular project is named `review` (leftover from scaffolding), so build targ
 Fully lazy-loaded and hierarchical. `app.routes.ts` mounts `MainLayoutComponent` at `''`, then
 `loadChildren` per feature; each feature's routes file uses `loadComponent` per page. A feature's
 top-level component (e.g. `EventsComponent`) is just a `<router-outlet>` host for its children.
-Unknown paths redirect to `/dashboard`.
+Unknown paths render `NotFoundComponent` (`features/not-found/`) instead of redirecting: a `**` child of
+`MainLayoutComponent` (so the sidebar stays) plus a root-level `**` as a fallback for unauthenticated hits.
+The requested URL is shown on the page.
 
 Events routes: `''` (list) · `new` · `:eventID` (detail) · `:eventID/ticket-state`.
 

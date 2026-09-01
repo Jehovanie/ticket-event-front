@@ -1,0 +1,126 @@
+<div class="w-full min-h-full flex items-center justify-center bg-gray-50 px-6 py-12">
+  <div class="w-full max-w-2xl text-center">
+
+    <!--
+      Illustration : une baie de serveurs et un câble débranché. La panne est
+      côté infrastructure, pas côté utilisateur — l'image le dit avant le texte.
+    -->
+    <svg
+      class="mx-auto w-full max-w-xs h-auto"
+      viewBox="0 0 320 150"
+      fill="none"
+      role="img"
+      aria-label="Illustration d'un serveur déconnecté"
+    >
+      <!-- Trois unités de la baie -->
+      <rect x="60" y="18" width="140" height="32" rx="8" class="fill-white stroke-gray-200" stroke-width="2" />
+      <rect x="60" y="59" width="140" height="32" rx="8" class="fill-white stroke-gray-200" stroke-width="2" />
+      <rect x="60" y="100" width="140" height="32" rx="8" class="fill-primary-50 stroke-primary-200" stroke-width="2" />
+
+      <!-- Voyants : les deux premiers éteints, le dernier en alerte -->
+      <circle cx="78" cy="34" r="5" class="fill-gray-200" />
+      <circle cx="78" cy="75" r="5" class="fill-gray-200" />
+      <circle cx="78" cy="116" r="5" class="fill-danger-500" />
+
+      <!-- Ventilations -->
+      <rect x="94" y="30" width="62" height="7" rx="3.5" class="fill-gray-100" />
+      <rect x="94" y="71" width="48" height="7" rx="3.5" class="fill-gray-100" />
+      <rect x="94" y="112" width="56" height="7" rx="3.5" class="fill-primary-100" />
+
+      <!-- Câble débranché : la coupure est au milieu -->
+      <path d="M200 75h34" class="stroke-gray-300" stroke-width="4" stroke-linecap="round" />
+      <rect x="234" y="68" width="14" height="14" rx="4" class="fill-gray-300" />
+      <rect x="268" y="68" width="14" height="14" rx="4" class="fill-gray-300" />
+      <path d="M282 75h26" class="stroke-gray-300" stroke-width="4" stroke-linecap="round" />
+
+      <!-- Étincelles dans l'espace vide -->
+      <path d="M254 62l6-10M258 75h4M254 88l6 10" class="stroke-danger-500" stroke-width="2.5" stroke-linecap="round" />
+    </svg>
+
+    <p class="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-danger-600">
+      @if (isUnreachable) { API injoignable } @else { Erreur {{ status }} }
+    </p>
+
+    <h1 class="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+      {{ title }}
+    </h1>
+
+    <p class="mt-3 text-base text-gray-500 leading-relaxed">
+      {{ description }}
+    </p>
+
+    <!--
+      Bandeau de sonde : l'utilisateur voit que l'application continue de tester
+      l'API toute seule, ce qui évite les rechargements de page à répétition.
+    -->
+    <div class="mt-6 rounded-xl bg-white border border-gray-200 p-4 text-left shadow-sm">
+      <div class="flex items-center gap-3">
+        @if (state.isChecking) {
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-700 flex-shrink-0">
+            <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-gray-900">Vérification du serveur…</p>
+            <p class="text-xs text-gray-500 mt-0.5">Appel de <code>{{ apiUrl }}/health</code></p>
+          </div>
+        } @else {
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-danger-50 text-danger-600 flex-shrink-0">
+            <mat-icon class="!w-5 !h-5 !text-xl">cloud_off</mat-icon>
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-gray-900">
+              Toujours pas de réponse — nouvelle tentative dans {{ state.secondsBeforeRetry }} s
+            </p>
+            <p class="text-xs text-gray-500 mt-0.5">
+              {{ state.attempts }} tentative{{ state.attempts > 1 ? 's' : '' }} · reprise automatique dès que l'API répond
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <button
+        type="button"
+        (click)="checkNow()"
+        [disabled]="state.isChecking"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-white px-6 h-11 rounded-lg font-medium text-sm hover:bg-primary-800 active:bg-primary-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl">refresh</mat-icon>
+        Réessayer maintenant
+      </button>
+
+      <a
+        routerLink="/dashboard"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 h-11 rounded-lg font-medium text-sm border border-gray-200 hover:bg-gray-50 hover:text-primary-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+      >
+        <mat-icon class="!w-5 !h-5 !text-xl">dashboard</mat-icon>
+        Retour au tableau de bord
+      </a>
+    </div>
+
+    <!-- Détail technique : la première question posée au support est toujours « quelle URL ? ». -->
+    <div class="mt-12 pt-8 border-t border-gray-200 text-left">
+      <p class="text-sm font-medium text-gray-500 text-center">Détails techniques</p>
+
+      <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl bg-white border border-gray-200 p-4">
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-400">Serveur API</dt>
+          <dd class="mt-1 text-sm text-gray-700 break-all"><code>{{ apiUrl }}</code></dd>
+        </div>
+        <div class="rounded-xl bg-white border border-gray-200 p-4">
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-400">Réponse</dt>
+          <dd class="mt-1 text-sm text-gray-700">
+            @if (isUnreachable) { Aucune réponse (connexion refusée) } @else { Code HTTP {{ status }} }
+          </dd>
+        </div>
+      </dl>
+
+      <p class="mt-4 text-xs text-gray-400 text-center">
+        Si le problème persiste, vérifiez que l'API est démarrée puis contactez votre administrateur.
+      </p>
+    </div>
+  </div>
+</div>
